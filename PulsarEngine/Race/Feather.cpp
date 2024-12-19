@@ -5,6 +5,8 @@
 #include <MarioKartWii/Input/InputManager.hpp>
 #include <MarioKartWii/CourseMgr.hpp>
 #include <PulsarSystem.hpp>
+#include <MarioKartWii/RKNet/RKNetController.hpp>
+#include <WTP.hpp>
 
 
 namespace Pulsar {
@@ -138,10 +140,30 @@ kmCall(0x807a857c, ConditionalNoBlooperAnimation);
 kmCall(0x807a85ac, ConditionalNoBlooperAnimation);
 
 
-void ConditionalObjProperties(Item::ObjProperties* dest, const Item::ObjProperties& rel) {
+/* void ConditionalObjProperties(Item::ObjProperties* dest, const Item::ObjProperties& rel) {
     new (dest) Item::ObjProperties(rel);
     if(System::sInstance->IsContext(PULSAR_FEATHER)) {
         dest->limit = 4;
+        dest->canFallOnTheGround = true;
+        dest->canFallOnTheGround2 = true;
+    }
+}
+kmCall(0x80790bc4, ConditionalObjProperties); */
+
+void ConditionalObjProperties(Item::ObjProperties* dest, const Item::ObjProperties& rel) {
+        bool itemModeFeather = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST){
+            itemModeFeather = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEFEATHER) ? Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        }
+
+    new (dest) Item::ObjProperties(rel);
+    if(System::sInstance->IsContext(PULSAR_FEATHER)) {
+        if(itemModeFeather == Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY){
+            dest->limit = 12; 
+        }
+        else{
+            dest->limit = 4;
+        }
         dest->canFallOnTheGround = true;
         dest->canFallOnTheGround2 = true;
     }

@@ -33,8 +33,9 @@ enum UMTeffects { //Chips are not implemented currently due to pure laziness
     //rk_driftSpark3R1T_Spark01
 };
 
-class ExpPlayerEffects : public Effects::Player {
+/* class ExpPlayerEffects : public Effects::Player {
 public:
+    static const int SmtEffectsCount = 8;
     static const int UmtEffectsCount = 8;
     explicit ExpPlayerEffects(Kart::Player* kartPlayer) : Effects::Player(kartPlayer) { };
     ~ExpPlayerEffects() override {
@@ -46,6 +47,34 @@ public:
     }
     EGG::Effect** rk_purpleMT;
     static const char* UMTNames[8];
+    static const char* SMTNames[8];
+}; */
+
+class ExpPlayerEffects : public Effects::Player {
+public:
+    static const int SmtEffectsCount = 8;
+    static const int UmtEffectsCount = 8;
+    explicit ExpPlayerEffects(Kart::Player* kartPlayer) : Effects::Player(kartPlayer) { };
+    ~ExpPlayerEffects() override {
+        if (isBike){
+            EGG::Effect** array = rk_orangeMT;
+            if(array != nullptr) {
+                for(int i = 0; i < SmtEffectsCount; ++i) delete(array[i]);
+                delete[] array;
+            }
+        }
+        else{ 
+            EGG::Effect** array = rk_purpleMT;
+            if(array != nullptr) {
+                for(int i = 0; i < UmtEffectsCount; ++i) delete(array[i]);
+                delete[] array;
+            }
+        }
+    }
+    EGG::Effect** rk_purpleMT;
+    EGG::Effect** rk_orangeMT;
+    static const char* UMTNames[8];
+    static const char* SMTNames[8];
 };
 #endif
 }//namespace Race

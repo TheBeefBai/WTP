@@ -22,7 +22,7 @@ void ExpWFCMain::OnInit() {
     WFCMainMenu::OnInit();
     this->AddControl(5, settingsButton, 0);
 
-    this->settingsButton.Load(UI::buttonFolder, "PULiMenuSingleTop", "Settings", 1, 0, false);
+    this->settingsButton.Load(UI::buttonFolder, "Settings1P", "Settings", 1, 0, false);
     this->settingsButton.buttonId = 5;
     this->settingsButton.SetOnClickHandler(this->onSettingsClick, 0);
     this->settingsButton.SetOnSelectHandler(this->onButtonSelectHandler);

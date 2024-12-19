@@ -32,6 +32,14 @@ enum Context {
     PULSAR_MIIHEADS,
     PULSAR_MODE_OTT,
     PULSAR_MODE_KO,
+    PULSAR_CHARRESTRICTLIGHT,
+    PULSAR_CHARRESTRICTMEDIUM,
+    PULSAR_CHARRESTRICTHEAVY,
+    PULSAR_KARTRESTRICT,
+    PULSAR_BIKERESTRICT,
+    PULSAR_GAMEMODERANDOM,
+    PULSAR_GAMEMODEBLAST,
+    PULSAR_GAMEMODEFEATHER,
     PULSAR_CONTEXT_COUNT,
 };
 
@@ -40,7 +48,7 @@ enum Context {
 class System {
 protected:
     System();
-private:
+public:
     //System functions
     void Init(const ConfigFile& conf);
     void InitInstances(const ConfigFile& conf, IOType type);
@@ -48,6 +56,7 @@ private:
     void InitCups(const ConfigFile& conf);
     void InitSettings(const u16* totalTrophyCount) const;
     void UpdateContext();
+    static void UpdateContextWrapper();
 protected:
     //Virtual
     virtual void AfterInit() {};
@@ -90,7 +99,7 @@ public:
     EGG::TaskThread* const taskThread; //0x8
     //Constants
 
-private:
+public:
     char modFolderName[IOS::ipcMaxFileName + 1]; //0xC
     u8 padding[2];
     Info info; //0x1c

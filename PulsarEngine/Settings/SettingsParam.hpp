@@ -11,7 +11,7 @@ namespace Settings {
 class Params {
 public:
     static const int pulsarPageCount = 5;
-    static const int userPageCount = 0;
+    static const int userPageCount = 1;
     static const int pageCount = pulsarPageCount + userPageCount;
 
     static const int maxRadioCount = 6; //per page, due to space
@@ -36,7 +36,7 @@ enum Type {
 
 //If you want to add settings to your packs, they go in this enum, and GetUserSettingValue should be used to obtain the value of a given setting
 enum UserType {
-
+    SETTINGSTYPE_WTP
 };
 
 }//namespace Settings
@@ -82,6 +82,14 @@ enum KOSettings {
     SETTINGKO_KOPERRACE = 0 + 6,
     SETTINGKO_RACESPERKO = 1 + 6,
 
+};
+
+enum WTPSettings {
+    SETTINGWTP_TRANSMISSION = 0,
+    SETTINGWTP_CHARRESTRICT = 1,
+    SETTINGWTP_VEHICLERESTRICT = 2,
+    SETTINGWTP_BRAKEDRIFT = 3,
+    SETTINGWTP_GAMEMODE = 0 + 6,
 };
 
 //MENU SETTINGS
@@ -218,6 +226,39 @@ enum KOSettingRacesPerKO {
     KOSETTING_RACESPERKO_4
 };
 //KOSETTINGS
+
+//WTPSETTINGS
+enum WTPSettingTransmission {
+    WTPSETTING_TRANSMISSION_DEFAULT,
+    WTPSETTING_TRANSMISSION_ALLINSIDE,
+    WTPSETTING_TRANSMISSION_BIKEINSIDE,
+    WTPSETTING_TRANSMISSION_ALLOUTSIDE,
+};
+
+enum WTPSettingCharRestrict {
+    WTPSETTING_CHARRESTRICT_DEFAULT,
+    WTPSETTING_CHARRESTRICT_LIGHT,
+    WTPSETTING_CHARRESTRICT_MEDIUM,
+    WTPSETTING_CHARRESTRICT_HEAVY,
+};
+
+enum WTPSettingVehicleRestrict {
+    WTPSETTING_VEHICLERESTRICT_DEFAULT,
+    WTPSETTING_VEHICLERESTRICT_KARTS,
+    WTPSETTING_VEHICLERESTRICT_BIKES,
+};
+
+enum WTPSettingBrakeDrift {
+    WTPSETTING_BRAKEDRIFT_ENABLED,
+    WTPSETTING_BRAKEDRIFT_DISABLED,
+};
+
+enum WTPSettingGamemode {
+    WTPSETTING_GAMEMODE_REGULAR,
+    WTPSETTING_GAMEMODE_RANDOM,
+    WTPSETTING_GAMEMODE_FEATHERONLY,
+    WTPSETTING_GAMEMODE_BLASTBLITZ,
+};
 
 }//namespace Pulsar
 

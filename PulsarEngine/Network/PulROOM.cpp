@@ -34,11 +34,28 @@ static void BeforeROOMSend(RKNet::PacketHolder<PulROOM>* packetHolder, PulROOM* 
         const u8 koSetting = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_ENABLED) && destPacket->message == 0; //KO only enabled for normal GPs
         //invert mii setting as the first button is enabled, not disabled, so a value of 1 indicates disabled
         const u8 ottOnline = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ONLINE);
+        const u8 charRestrictLight = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_LIGHT;
+        const u8 charRestrictMedium = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_MEDIUM;
+        const u8 charRestrictHeavy = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_HEAVY;
+        const u8 kartRestrict = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_VEHICLERESTRICT) == WTPSETTING_VEHICLERESTRICT_KARTS;
+        const u8 bikeRestrict = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_VEHICLERESTRICT) == WTPSETTING_VEHICLERESTRICT_BIKES;
+        const u8 itemModeRandom = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_RANDOM;
+        const u8 itemModeBlast = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BLASTBLITZ;
+        const u8 itemModeFeather = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERONLY;
+
         destPacket->hostSystemContext = (ottOnline != OTTSETTING_OFFLINE_DISABLED) << PULSAR_MODE_OTT //ott
             | (ottOnline == OTTSETTING_ONLINE_FEATHER) << PULSAR_FEATHER //ott feather
             | (settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWUMTS) ^ true) << PULSAR_UMTS //ott umts
             | koSetting << PULSAR_MODE_KO
             | (settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_ALLOW_MIIHEADS) ^ true) << PULSAR_MIIHEADS
+            | charRestrictLight << PULSAR_CHARRESTRICTLIGHT
+            | charRestrictMedium << PULSAR_CHARRESTRICTMEDIUM
+            | charRestrictHeavy << PULSAR_CHARRESTRICTHEAVY
+            | kartRestrict << PULSAR_KARTRESTRICT
+            | bikeRestrict << PULSAR_BIKERESTRICT
+            | itemModeRandom << PULSAR_GAMEMODERANDOM
+            | itemModeBlast << PULSAR_GAMEMODEBLAST
+            | itemModeFeather << PULSAR_GAMEMODEFEATHER
             | settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_HOSTWINS) << PULSAR_HAW;
 
         u8 raceCount;
@@ -77,10 +94,36 @@ static void AfterROOMReception(const RKNet::PacketHolder<PulROOM>* packetHolder,
     asm(mr packet, r28;);
     const RKNet::Controller* controller = RKNet::Controller::sInstance;
     const RKNet::ControllerSub& sub = controller->subs[controller->currentSub];
+    const Settings::Mgr& settings = Settings::Mgr::Get();
     //START msg sent by the host, size check should always be guaranteed in theory
     if (src.messageType == 1 && sub.localAid != sub.hostAid && packetHolder->packetSize == sizeof(PulROOM)) {
         ConvertROOMPacketToData(src);
 
+    bool isCharRestrictLight = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_LIGHT;
+    bool isCharRestrictMedium = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_MEDIUM;
+    bool isCharRestrictHeavy = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_HEAVY;
+    bool isKartRestrictKart = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_VEHICLERESTRICT) == WTPSETTING_VEHICLERESTRICT_KARTS;
+    bool isKartRestrictBike = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_VEHICLERESTRICT) == WTPSETTING_VEHICLERESTRICT_BIKES;
+    bool isItemModeRandom = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_RANDOM;
+    bool isItemModeBlast = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BLASTBLITZ;
+    bool isItemModeFeather = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERONLY;
+        
+    u32 newContext = 0;
+    Network::Mgr& netMgr = Pulsar::System::sInstance->netMgr;
+        newContext = netMgr.hostContext;
+        isCharRestrictLight = newContext & (1 << PULSAR_CHARRESTRICTLIGHT);
+        isCharRestrictMedium = newContext & (1 << PULSAR_CHARRESTRICTMEDIUM);
+        isCharRestrictHeavy = newContext & (1 << PULSAR_CHARRESTRICTHEAVY);
+        isKartRestrictKart = newContext & (1 << PULSAR_KARTRESTRICT);
+        isKartRestrictBike = newContext & (1 << PULSAR_BIKERESTRICT);
+        isItemModeRandom = newContext & (1 << PULSAR_GAMEMODERANDOM);
+        isItemModeBlast = newContext & (1 << PULSAR_GAMEMODEBLAST);
+        isItemModeFeather = newContext & (1 << PULSAR_GAMEMODEFEATHER);
+    netMgr.hostContext = newContext;
+
+    u32 context = (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | (isItemModeFeather << PULSAR_GAMEMODEFEATHER);
+    Pulsar::System::sInstance->context = context;
+        
         //Also exit the settings page to prevent weird graphical artefacts
         Page* topPage = SectionMgr::sInstance->curSection->GetTopLayerPage();
         PageId topId = topPage->pageId;

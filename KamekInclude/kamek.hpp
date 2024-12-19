@@ -232,6 +232,13 @@ public:
     static void Exec() { DoFuncsHook::Exec(raceLoadHooks); }
 };
 
+class PageLoadHook : public DoFuncsHook {
+    static DoFuncsHook* pageLoadHooks;
+public:
+    PageLoadHook(Func& f) : DoFuncsHook(f, &pageLoadHooks) {}
+    static void Exec() { DoFuncsHook::Exec(pageLoadHooks); }
+};
+
 class RaceFrameHook : public DoFuncsHook {
     static DoFuncsHook* raceFrameHooks;
 public:

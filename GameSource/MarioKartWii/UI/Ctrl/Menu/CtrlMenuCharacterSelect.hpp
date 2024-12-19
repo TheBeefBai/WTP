@@ -3,12 +3,13 @@
 #include <kamek.hpp>
 #include <MarioKartWii/UI/Ctrl/UIControl.hpp>
 #include <MarioKartWii/UI/Ctrl/PushButton.hpp>
+#include <MarioKartWii/UI/Ctrl/CountDown.hpp>
 
 //_sinit_ at 807e43ec
 class CtrlMenuCharacterSelect : public LayoutUIControl {
 public:
     class ButtonDriver : public PushButton {
-    private:
+    public:
         ButtonDriver(); //807e2808
         ~ButtonDriver() override; //807e2844 vtable 808d3074
         void InitSelf() override; //0x18 807e3e10

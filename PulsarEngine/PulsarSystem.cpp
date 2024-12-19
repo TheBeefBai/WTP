@@ -131,6 +131,14 @@ void System::UpdateContext() {
 
 
     bool is200 = racedataSettings.engineClass == CC_100 && this->info.Has200cc();
+    bool isCharRestrictLight = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_LIGHT;
+    bool isCharRestrictMedium = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_MEDIUM;
+    bool isCharRestrictHeavy = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_HEAVY;
+    bool isKartRestrictKart = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_VEHICLERESTRICT) == WTPSETTING_VEHICLERESTRICT_KARTS;
+    bool isKartRestrictBike = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_VEHICLERESTRICT) == WTPSETTING_VEHICLERESTRICT_BIKES;
+    bool isItemModeRandom = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_RANDOM;
+    bool isItemModeBlast = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BLASTBLITZ;
+    bool isItemModeFeather = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERONLY;
     bool isFeather = this->info.HasFeather();
     bool isUMTs = this->info.HasUMTs();
     bool isMegaTC = this->info.HasMegaTC();
@@ -145,6 +153,14 @@ void System::UpdateContext() {
             case(RKNet::ROOMTYPE_FROOM_NONHOST):
                 isCT = mode != MODE_BATTLE && mode != MODE_PUBLIC_BATTLE && mode != MODE_PRIVATE_BATTLE;
                 newContext = netMgr.hostContext;
+                isCharRestrictLight = newContext & (1 << PULSAR_CHARRESTRICTLIGHT);
+                isCharRestrictMedium = newContext & (1 << PULSAR_CHARRESTRICTMEDIUM);
+                isCharRestrictHeavy = newContext & (1 << PULSAR_CHARRESTRICTHEAVY);
+                isKartRestrictKart = newContext & (1 << PULSAR_KARTRESTRICT);
+                isKartRestrictBike = newContext & (1 << PULSAR_BIKERESTRICT);
+                isItemModeRandom = newContext & (1 << PULSAR_GAMEMODERANDOM);
+                isItemModeBlast = newContext & (1 << PULSAR_GAMEMODEBLAST);
+                isItemModeFeather = newContext & (1 << PULSAR_GAMEMODEFEATHER);
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
                 isOTT = newContext & (1 << PULSAR_MODE_OTT);
@@ -169,7 +185,7 @@ void System::UpdateContext() {
 
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
-        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO);
+        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | (isItemModeFeather << PULSAR_GAMEMODEFEATHER);
     }
     this->context = context;
 
@@ -192,6 +208,12 @@ void System::UpdateContext() {
         this->koMgr = nullptr;
     }
 }
+
+void System::UpdateContextWrapper() {
+    System::sInstance->UpdateContext();
+}
+
+static Pulsar::Settings::Hook UpdateContext(System::UpdateContextWrapper);
 
 s32 System::OnSceneEnter(Random& random) {
     System* self = System::sInstance;

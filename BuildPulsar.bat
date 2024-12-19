@@ -16,7 +16,7 @@ set "GAMESOURCE=.\GameSource"
 SET "PULSAR=.\PulsarEngine"
 
 :: Change this as necessary depending on where you put CodeWarrior
-SET "CC="
+SET "CC=C:\Users\joshr\Documents\Gaming\MKWii\Pulsar\CodeWarrior\Command_Line_Tools\mwcceppc.exe"
 
 :: Riivolution Destination (change as necessary)
 SET "RIIVO="
