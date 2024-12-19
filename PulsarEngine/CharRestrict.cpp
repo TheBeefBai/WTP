@@ -4,6 +4,8 @@
 #include <MarioKartWii/GlobalFunctions.hpp>
 #include <MarioKartWii/RKNet/RKNetController.hpp>
 
+//WTP Dev Note: Code by Retro Rewind Team
+
 namespace WTP {
 namespace UI {
     System::WeightClass GetMiiWeightClass(Mii &mii){

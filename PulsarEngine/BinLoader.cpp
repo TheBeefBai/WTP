@@ -2,6 +2,8 @@
 #include <MarioKartWii/RKNet/RKNetController.hpp>
 #include <WTP.hpp>
 
+//WTP Dev Note: Code by Retro Rewind Team, based off of code by BrawlboxGaming
+
 namespace WTP{
 void *GetCustomKartParam(ArchiveMgr *archive, ArchiveSource type, const char *name, u32 *length){
     if(static_cast<Pulsar::WTPSettingTransmission>(Pulsar::Settings::Mgr::Get().GetUserSettingValue(static_cast<Pulsar::Settings::UserType>(Pulsar::Settings::SETTINGSTYPE_WTP), Pulsar::SETTINGWTP_TRANSMISSION)) == Pulsar::WTPSETTING_TRANSMISSION_DEFAULT){

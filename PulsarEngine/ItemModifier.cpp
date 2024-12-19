@@ -6,6 +6,8 @@
 #include <MarioKartWii/Kart/KartDamage.hpp>
 #include <WTP.hpp>
 
+//WTP Dev Note: Code by Retro Rewind Team
+
 namespace WTP{
 namespace Race
 {

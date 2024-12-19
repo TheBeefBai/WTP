@@ -4,6 +4,8 @@
 #include <MarioKartWii/Item/ItemBehaviour.hpp>
 #include <PulsarSystem.hpp>
 
+//WTP Dev Note: Code by BrawlboxGaming, with fixes by Optllizer
+
 namespace Pulsar {
 namespace Race {
 int UseItem(Kart::Collision *kartCollision, ItemId id){

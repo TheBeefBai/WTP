@@ -5,7 +5,7 @@
 #include <PulsarSystem.hpp>
 #include <WTP.hpp>
 
-//WTP Dev Note: Outside Drift Bike SMT code taken from Retro Rewind
+//WTP Dev Note: Includes Outside Drift Bike SMT by Retro Rewind Team
 
 namespace Pulsar {
 namespace Race {
