@@ -48,7 +48,7 @@ winningCourse(PULSARID_NONE), selectedCourse(PULSARID_FIRSTREG), lastSelectedCup
     u16 cumulativeVarCount = 0;
     for (int i = 0; i < ctsCount; ++i) {
         invertedAlphabeticalArray[alphabeticalArray[i]] = i;
-        variantsOffs[i] = cumulativeVarCount * sizeof(Variant);
+        variantsOffs[i] = cumulativeVarCount;
         cumulativeVarCount += mainTracks[i].variantCount;
     }
 }
