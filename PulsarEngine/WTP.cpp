@@ -47,6 +47,29 @@ System::WeightClass System::GetWeightClass(const CharacterId id){
     }
 }
 
+
+
+void ItemRainPatch(){
+    const RacedataScenario& scenario = Racedata::sInstance->racesScenario;
+    const GameMode mode = scenario.settings.gamemode;
+    ItemRainHook = 0x00;
+    bool isItemRain = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || mode == MODE_VS_RACE || mode == MODE_BATTLE)
+    {
+        isItemRain = Pulsar::System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEITEMRAIN) ? Pulsar::WTPSETTING_GAMEMODE_ITEMRAIN : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    }
+    if(isItemRain == Pulsar::WTPSETTING_GAMEMODE_ITEMRAIN)
+    {
+        ItemRainHook = 0x00FF0100;
+    }
+    else if(isItemRain == Pulsar::WTPSETTING_GAMEMODE_REGULAR){
+        ItemRainHook = 0x00;
+    }
+    Pulsar::System::CacheInvalidateAddress(ItemRainHook);
+}
+
+static PageLoadHook PatchItemRain(ItemRainPatch);
+
 namespace Codes
 {
     namespace Online

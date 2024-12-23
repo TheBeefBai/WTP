@@ -4,7 +4,7 @@
 #include <MarioKartWii/GlobalFunctions.hpp>
 #include <MarioKartWii/RKNet/RKNetController.hpp>
 
-//WTP Dev Note: Code by Retro Rewind Team
+//WTP Dev Note: Code by BrawlboxGaming, modified by Retro Rewind Team
 
 namespace WTP {
 namespace UI {

@@ -2,7 +2,7 @@
 #include <MarioKartWii/RKNet/RKNetController.hpp>
 #include <WTP.hpp>
 
-//WTP Dev Note: Code by Retro Rewind Team, based off of code by BrawlboxGaming
+//WTP Dev Note: Code by BrawlboxGaming, modified by Retro Rewind Team
 
 namespace WTP{
 void *GetCustomKartParam(ArchiveMgr *archive, ArchiveSource type, const char *name, u32 *length){

@@ -1873,4 +1873,4 @@ SetButtonColours__Q223CtrlMenuCharacterSelect12ButtonDriverFUi = 0x807e4130
 OnButtonDriverSelect__Q25Pages15CharacterSelectFPQ223CtrlMenuCharacterSelect12ButtonDriverUiUc = 0x8083e5f4
 IsKartUnlocked = 0x8081cfb4
 IsKartUnlocked__F6KartIdUi = 0x8081cfb4
-
+ItemRainHook = 0x800017C8

@@ -40,6 +40,7 @@ enum Context {
     PULSAR_GAMEMODERANDOM,
     PULSAR_GAMEMODEBLAST,
     PULSAR_GAMEMODEFEATHER,
+    PULSAR_GAMEMODEITEMRAIN,
     PULSAR_CONTEXT_COUNT,
 };
 
@@ -57,6 +58,12 @@ public:
     void InitSettings(const u16* totalTrophyCount) const;
     void UpdateContext();
     static void UpdateContextWrapper();
+    static inline void CacheInvalidateAddress(register u32 address) {
+    asm(dcbst 0, address;);
+    asm(sync;);
+    asm(icbi 0, address;);
+    asm(isync;);
+}
 protected:
     //Virtual
     virtual void AfterInit() {};

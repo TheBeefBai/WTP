@@ -5,6 +5,8 @@
 #include <MarioKartWii/System/Identifiers.hpp>
 #include <MarioKartWii/Race/RaceData.hpp>
 
+extern u32 ItemRainHook;
+
 namespace WTP {
     class System : public Pulsar::System {
         public:

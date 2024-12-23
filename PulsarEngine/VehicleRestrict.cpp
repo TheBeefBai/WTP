@@ -4,7 +4,7 @@
 #include <Network/MatchCommand.hpp>
 #include <MarioKartWii/UI/Page/Menu/KartSelect.hpp>
 
-//WTP Dev Note: Code by Retro Rewind Team
+//WTP Dev Note: Code by BrawlboxGaming, modified by Retro Rewind Team
 
 namespace WTP{
 namespace UI{
