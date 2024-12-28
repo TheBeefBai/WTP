@@ -28,12 +28,16 @@ void *GetCustomItemSlot(ArchiveMgr *archive, ArchiveSource type, const char *nam
     const GameMode mode = scenario.settings.gamemode;
     bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     bool itemModeBlast = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
-    bool itemModeFeather = Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY;
+    bool itemModeFeather = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    bool itemModeNone = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
 
     if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || mode == MODE_VS_RACE || mode == MODE_BATTLE){
         itemModeRandom = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODERANDOM) ? Pulsar::WTPSETTING_GAMEMODE_RANDOM : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         itemModeBlast = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBLAST) ? Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         itemModeFeather = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEFEATHER) ? Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    }
+    if (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_BT_REGIONAL) {
+        itemModeNone = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     }
     if (itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeFeather == Pulsar::WTPSETTING_GAMEMODE_REGULAR)
     {
