@@ -133,6 +133,7 @@ void System::UpdateContext() {
 
     bool is200 = racedataSettings.engineClass == CC_100 && this->info.Has200cc();
     bool isKOFinal = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_FINAL) == KOSETTING_FINAL_ALWAYS;
+    bool isOTTChangeCombo = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWCHANGECOMBO) == OTTSETTING_COMBO_ENABLED;
     bool isCharRestrictLight = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_LIGHT;
     bool isCharRestrictMedium = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_MEDIUM;
     bool isCharRestrictHeavy = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_HEAVY;
@@ -169,8 +170,9 @@ void System::UpdateContext() {
                 isOTT = newContext & (1 << PULSAR_MODE_OTT);
                 isMiiHeads = newContext & (1 << PULSAR_MIIHEADS);
                 if(isOTT) {
-                    isUMTs &= newContext & (1 << PULSAR_UMTS);
+                    isUMTs = newContext & (1 << PULSAR_UMTS);
                     isFeather &= newContext & (1 << PULSAR_FEATHER);
+                    isOTTChangeCombo = newContext & (1 << PULSAR_CHANGECOMBO);
                 }
                 break;
             default: isCT = false;
@@ -188,7 +190,7 @@ void System::UpdateContext() {
 
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
-        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | (isItemModeFeather << PULSAR_GAMEMODEFEATHER) | (isKOFinal << PULSAR_KOFINAL);
+        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | (isItemModeFeather << PULSAR_GAMEMODEFEATHER) | (isKOFinal << PULSAR_KOFINAL) | (isOTTChangeCombo << PULSAR_CHANGECOMBO);
     }
     this->context = context;
 

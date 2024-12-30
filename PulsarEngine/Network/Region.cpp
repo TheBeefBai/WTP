@@ -4,7 +4,7 @@
 
 namespace Pulsar {
 namespace Network {
-//Region Patch (Leseratte)
+/* //Region Patch (Leseratte)
 static void PatchLoginRegion() {
     u32 region = System::sInstance->GetInfo().GetWiimmfiRegion();
     char path[0x9];
@@ -54,8 +54,17 @@ kmWrite32(0x80653644, 0x7c651b78);
 kmCall(0x806536ac, PatchRKNetControllerRegion); //for battle
 kmWrite32(0x806536b0, 0x7c661b78);
 
-//kmCall(0x80653700, PatchRKNetControllerRegion); this is for battle, right now it'll store 2 (if pal)/FF
+//kmCall(0x80653700, PatchRKNetControllerRegion); this is for battle, right now it'll store 2 (if pal)/FF */
 
+//Region Patch (Laseratte)
+kmWrite32(0x80653644, 0x38A00520);
+kmWrite32(0x806536B0, 0x38C00520);
+kmWrite32(0x8065920C, 0x38E00520);
+kmWrite32(0x80659260, 0x38E00520);
+kmWrite32(0x80659724, 0x38E00520);
+kmWrite32(0x80659778, 0x38E00520);
+kmWrite32(0x8065A034, 0x38800020);
+kmWrite32(0x8065A080, 0x38800020);
 
 
 //kmWrite32(0x8065A034, 0x3880008E);

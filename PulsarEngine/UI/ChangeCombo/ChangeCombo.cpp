@@ -33,17 +33,20 @@ void ExpVR::OnInit() {
 
     const System* system = System::sInstance;
     bool isKOd = false;
-    if(system->IsContext(PULSAR_MODE_OTT) || system->IsContext(PULSAR_MODE_KO) && system->koMgr->isSpectating) isKOd = true;
+    if(system->IsContext(PULSAR_MODE_KO) && system->koMgr->isSpectating) isKOd = true;
+    if(system->IsContext(PULSAR_MODE_OTT) && system->IsContext(PULSAR_CHANGECOMBO) == OTTSETTING_COMBO_ENABLED) isKOd = true;
+    if(System::sInstance->IsContext(PULSAR_MODE_OTT) && ((RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL) || (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_JOINING_REGIONAL))) isKOd = true;
 
     this->AddControl(0xF, this->randomComboButton, 0);
     this->randomComboButton.isHidden = isKOd;
-    this->randomComboButton.Load(UI::buttonFolder, "PULiMemberConfirmButton", "Random", 0, 0, isKOd);
+    this->randomComboButton.Load(UI::buttonFolder, "PULiMemberConfirmButton", "Random", 1, 0, isKOd);
     this->randomComboButton.SetOnClickHandler(this->onRandomComboClick, 0);
 
     this->AddControl(0x10, this->changeComboButton, 0);
     this->changeComboButton.isHidden = isKOd;
     this->changeComboButton.Load(UI::buttonFolder, "PULiMemberConfirmButton", "Change", 1, 0, isKOd);
     this->changeComboButton.SetOnClickHandler(this->onChangeComboClick, 0);
+    this->changeComboButton.manipulator.SetAction(START_PRESS, this->changeComboButton.onClickHandlerObj, 0);
     //this->changeComboButton.manipulator.SetAction(START_PRESS, this->changeComboButton.onClickHandlerObj, 0);
 
     const Section* section = SectionMgr::sInstance->curSection;
