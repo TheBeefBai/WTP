@@ -29,12 +29,18 @@ void *GetCustomItemSlot(ArchiveMgr *archive, ArchiveSource type, const char *nam
     bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     bool itemModeBlast = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     bool itemModeFeather = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    bool itemModeFeatherless = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    bool itemModeBobOmb = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    bool itemModeShock = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     bool itemModeNone = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
 
     if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || mode == MODE_VS_RACE || mode == MODE_BATTLE){
         itemModeRandom = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODERANDOM) ? Pulsar::WTPSETTING_GAMEMODE_RANDOM : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         itemModeBlast = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBLAST) ? Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         itemModeFeather = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEFEATHER) ? Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        itemModeFeatherless = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEFEATHERLESS) ? Pulsar::WTPSETTING_GAMEMODE_FEATHERLESS : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        itemModeBobOmb = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBOBOMB) ? Pulsar::WTPSETTING_GAMEMODE_BOBOMBBLAST : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        itemModeShock = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODESHOCK) ? Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     }
     if (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_BT_REGIONAL) {
         itemModeNone = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
@@ -54,6 +60,18 @@ void *GetCustomItemSlot(ArchiveMgr *archive, ArchiveSource type, const char *nam
     if (itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ)
     {
         name="ItemSlotBlast.bin";
+    }
+    if (itemModeFeatherless == Pulsar::WTPSETTING_GAMEMODE_FEATHERLESS)
+    {
+        name="ItemSlotFeatherless.bin";
+    }
+    if (itemModeBobOmb == Pulsar::WTPSETTING_GAMEMODE_BOBOMBBLAST)
+    {
+        name="ItemSlotBob.bin";
+    }
+    if (itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP)
+    {
+        name="ItemSlotShock.bin";
     }
     return archive->GetFile(type, name, length);
 

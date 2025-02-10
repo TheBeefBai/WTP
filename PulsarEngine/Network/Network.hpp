@@ -23,6 +23,7 @@ public:
     u8 curBlockingArrayIdx;
     u8 racesPerGP;
     u8 padding[2];
+    u32 region;
     PulsarId* lastTracks;
 };
 

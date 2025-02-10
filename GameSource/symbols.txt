@@ -1874,3 +1874,16 @@ OnButtonDriverSelect__Q25Pages15CharacterSelectFPQ223CtrlMenuCharacterSelect12Bu
 IsKartUnlocked = 0x8081cfb4
 IsKartUnlocked__F6KartIdUi = 0x8081cfb4
 
+__ptmf_test = 0x800213e4
+Real_DWCi_Auth_SendRequest = 0x800ed6ec
+s_auth_work = 0x8038633c
+s_auth_error = 0x802f1cB8
+NHTTPDestroyResponse__FPv = 0x801d92f8
+NHTTPSendRequestAsync__FPv = 0x801d925c
+NHTTPCreateRequest__FPCciPvUiPvPv = 0x801d8ff8
+sprintf = 0x80011a2c
+
+WWFC_CUSTOM_REGION = 0x80005efc
+UltraUncutHook = 0x80001201
+RemoveBloom = 0x802575DF
+RemoveBackgroundBlur = 0x80258184

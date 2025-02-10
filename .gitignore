@@ -56,3 +56,8 @@ BuildTesting.bat
 *.vsidx
 PulsarPackCreator/Executable/Pulsar Pack Creator.dll.config
 *.v2
+GameSource/AntiCheat.txt
+PulsarEngine/AntiCheat.cpp
+PulsarEngine/AntiCheat.hpp
+build/Code.pul
+build/Code.pul
