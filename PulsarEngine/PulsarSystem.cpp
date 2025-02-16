@@ -120,12 +120,13 @@ void System::InitSettings(const u16* totalTrophyCount) const {
 void System::UpdateContext() {
     const RacedataSettings& racedataSettings = Racedata::sInstance->menusScenario.settings;
     const GameMode mode = racedataSettings.gamemode;
-    this->ottVoteState = OTT::COMBO_NONE;
+    this->ottMgr.Reset();
     const Settings::Mgr& settings = Settings::Mgr::Get();
     bool isCT = true;
     bool isHAW = false;
     bool isKO = false;
     bool isOTT = false;
+    bool isOTTOnline = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_WWMODE) == WWMODE_OTT && mode == MODE_PUBLIC_VS;
     bool isMiiHeads = settings.GetSettingValue(Settings::SETTINGSTYPE_RACE, SETTINGRACE_RADIO_MII);
     bool is200Online = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_WWMODE) == WWMODE_200 && mode == MODE_PUBLIC_VS;
 
@@ -179,6 +180,7 @@ void System::UpdateContext() {
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
                 isOTT = newContext & (1 << PULSAR_MODE_OTT);
+                isOTTOnline |= newContext & (1 << PULSAR_MODE_OTT);
                 is200Online |= newContext & (1 << PULSAR_200_WW);
                 isMiiHeads = newContext & (1 << PULSAR_MIIHEADS);
                 if(isOTT) {
@@ -241,6 +243,16 @@ void System::UpdateContextWrapper() {
 }
 
 static Pulsar::Settings::Hook UpdateContext(System::UpdateContextWrapper);
+
+void System::ClearOttContext()
+{
+    bool isOTTEnabled = Settings::Mgr::Get().GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_OFFLINE);
+    if (!isOTTEnabled) {
+        sInstance->context &= ~(1 << PULSAR_MODE_OTT);
+    }
+}
+
+static Pulsar::Settings::Hook UpdateOTTContext(System::ClearOttContext);
 
 s32 System::OnSceneEnter(Random& random) {
     System* self = System::sInstance;

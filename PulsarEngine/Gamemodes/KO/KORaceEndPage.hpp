@@ -31,6 +31,7 @@ private:
         this->AddControl(gameControlCount, this->countdownControl, 0);
         this->countdownControl.Load(this->countdown);
     }
+    int frameCounter;
     CountDownTimerControl countdownControl;
     CountDown countdown;
 

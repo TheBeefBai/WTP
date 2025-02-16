@@ -12,6 +12,7 @@
 #include <Config.hpp>
 #include <Network/Network.hpp>
 #include <Network/MatchCommand.hpp>
+#include <Gamemodes/OnlineTT/OnlineTT.hpp>
 
 
 namespace Pulsar {
@@ -64,6 +65,7 @@ public:
     void InitSettings(const u16* totalTrophyCount) const;
     void UpdateContext();
     static void UpdateContextWrapper();
+    static void ClearOttContext();
 protected:
     //Virtual
     virtual void AfterInit() {};
@@ -125,6 +127,7 @@ public:
     KO::Mgr* koMgr;
     u32 ottVoteState;
     bool ottHideNames;
+    OTT::Mgr ottMgr;
     u8 nonTTGhostPlayersCount; //because a ghost can be added in vs, racedata's playercount is not reliable
 
 private:

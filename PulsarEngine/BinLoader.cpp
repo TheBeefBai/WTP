@@ -45,7 +45,7 @@ void *GetCustomItemSlot(ArchiveMgr *archive, ArchiveSource type, const char *nam
     if (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_BT_REGIONAL) {
         itemModeNone = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
     }
-    if (itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeFeather == Pulsar::WTPSETTING_GAMEMODE_REGULAR)
+    if (itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeFeather == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeFeatherless == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeBobOmb == Pulsar::WTPSETTING_GAMEMODE_REGULAR || itemModeShock == Pulsar::WTPSETTING_GAMEMODE_REGULAR)
     {
         name="ItemSlotWTP.bin";
     }

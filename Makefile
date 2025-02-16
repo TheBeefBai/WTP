@@ -1,8 +1,8 @@
-CC := C:/Users/joshr/Documents/Gaming/MKWii/Pulsar/CodeWarrior/Command_Line_Tools/mwcceppc.exe
+CC := C:/Users/ZachPL/Documents/Source/Common/cw/mwcceppc.exe
 ENGINE := ./KamekInclude
 GAMESOURCE := ./GameSource
 PULSAR := ./PulsarEngine
-RIIVO := "G:/Emulation/GCN and Wii/DolphinTesting/User/Load/Riivolution/GrillinsWTPTest"
+RIIVO := "C:/Users/ZachPL/AppData/Roaming/Dolphin Emulator/Load/Riivolution/GrillinsWTP"
 CFLAGS := -I- -i $(ENGINE) -i $(GAMESOURCE) -i $(PULSAR) -opt all -inline auto -enum int -proc gekko -fp hard -sdata 0 -sdata2 0 -maxerrors 1 -func_align 4
 KAMEK := ./KamekLinker/Kamek.exe
 EXTERNALS := -externals=$(GAMESOURCE)/symbols.txt -externals=$(GAMESOURCE)/AntiCheat.txt -versions=$(GAMESOURCE)/versions.txt

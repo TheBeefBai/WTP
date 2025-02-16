@@ -24,8 +24,6 @@ void ExpWFCMain::OnInit() {
     this->settingsButton.SetOnSelectHandler(this->onButtonSelectHandler);
 
     this->topSettingsPage = SettingsPanel::id;
-
-    // this->manipulatorManager.SetGlobalHandler(START_PRESS, this->onStartPress, false, false);
 }
 
 void ExpWFCMain::OnSettingsButtonClick(PushButton& pushButton, u32 r5) {
@@ -44,30 +42,6 @@ void ExpWFCMain::ExtOnButtonSelect(PushButton& button, u32 hudSlotId) {
     else this->OnButtonSelect(button, hudSlotId);
 }
 
-// void ExpWFCMain::BeforeControlUpdate() {
-//     WFCMainMenu::BeforeControlUpdate();
-
-//     int num150cc, num200cc, numOTT, numRegular;
-//     PlayerCount::GetNumbers(num150cc, num200cc, numOTT, numRegular);
-
-//     if (s_displayPlayerCount) {
-//         Text::Info info;
-//         info.intToPass[0] = num150cc + num200cc + numOTT;
-//         this->regionalButton.SetTextBoxMessage("go", BMG_PLAYER_COUNT, &info);
-//     } else {
-//         RKSYS::Mgr* rksysMgr = RKSYS::Mgr::sInstance;
-//         u32 vr = 0;
-//         if(rksysMgr->curLicenseId >= 0) {
-//             RKSYS::LicenseMgr& license = rksysMgr->licenses[rksysMgr->curLicenseId];
-//             vr = license.vr.points;
-//         }
-
-//         Text::Info info;
-//         info.intToPass[0] = vr;
-//         this->regionalButton.SetTextBoxMessage("go", BMG_RATING, &info);
-//     }
-// }
-
 //ExpWFCModeSel
 kmWrite32(0x8064c284, 0x38800001); //distance func
 
@@ -79,7 +53,7 @@ void ExpWFCModeSel::OnInit() {
 void ExpWFCModeSel::InitButton(ExpWFCModeSel& self) {
     self.InitControlGroup(7);
 
-    self.region = 0x0B;  // Store region in the page class instead
+    self.region = 0x521;  // Store region in the page class instead
     self.AddControl(5, self.ottButton, 0);
     self.ottButton.Load(UI::buttonFolder, "PULOTTButton", "PULOTTButton", 1, 0, 0);
     self.ottButton.buttonId = ottButtonId;
@@ -145,6 +119,14 @@ void ExpWFCModeSel::OnActivatePatch() {
     register Pages::GlobeSearch* search;
     asm(mr search, r30;);
     const bool isHidden = search->searchType == 1 ? false : true; //make the button visible if continental was clicked
+
+    // Reset game mode if worldwide is selected
+    if (isHidden) {
+        ClearModeContexts();
+        System::sInstance->netMgr.region = 0x520;
+        page->lastClickedButton = 0; // Reset to VS button
+    }
+
     page->ottButton.isHidden = isHidden;
     page->ottButton.manipulator.inaccessible = isHidden;
     page->twoHundredButton.isHidden = isHidden;
@@ -188,57 +170,5 @@ void ExpWFCModeSel::OnModeButtonSelect(PushButton& modeButton, u32 hudSlotId) {
     else WFCModeSelect::OnModeButtonSelect(modeButton, hudSlotId);
 }
 
-// void ExpWFCModeSel::BeforeControlUpdate() {
-//     WFCModeSelect::BeforeControlUpdate();
-
-//     int num150cc, num200cc, numOTT, numRegular;
-//     PlayerCount::GetNumbers(num150cc, num200cc, numOTT, numRegular);
-
-//     Pages::GlobeSearch* globeSearch = SectionMgr::sInstance->curSection->Get<Pages::GlobeSearch>();
-
-//     Text::Info info;
-//     if (s_displayPlayerCount && globeSearch->searchType == 1) {
-//         int numRetroRewindPlayers = num150cc + num200cc + numOTT;
-                
-//         info.intToPass[0] = numOTT;
-//         this->ottButton.SetTextBoxMessage("go", Pulsar::UI::BMG_PLAYER_COUNT, &info);
-
-//         info.intToPass[0] = num200cc;
-//         this->twoHundredButton.SetTextBoxMessage("go", Pulsar::UI::BMG_PLAYER_COUNT, &info);
-
-//         info.intToPass[0] = num150cc;
-//         this->vsButton.SetTextBoxMessage("go", Pulsar::UI::BMG_PLAYER_COUNT, &info);
-    
-//     } else {
-//         RKSYS::Mgr* rksysMgr = RKSYS::Mgr::sInstance;
-//         u32 vr = 0;
-//         if(rksysMgr->curLicenseId >= 0) {
-//             RKSYS::LicenseMgr& license = rksysMgr->licenses[rksysMgr->curLicenseId];
-//             vr = license.vr.points;
-//         }
-
-//         info.intToPass[0] = vr;
-//         this->ottButton.SetTextBoxMessage("go", Pulsar::UI::BMG_RATING, &info);
-//         this->twoHundredButton.SetTextBoxMessage("go", Pulsar::UI::BMG_RATING, &info);
-//         this->vsButton.SetTextBoxMessage("go", Pulsar::UI::BMG_RATING, &info);
-//     }
-// }
-
 } // namespace UI
 } // namespace Pulsar
-
-// void PatchWFCMenu_LoadButton(PushButton* _this, const char* folderName, const char* ctrName, const char* variant, u32 localPlayerBitfield, u32 r8, bool inaccessible) {
-//     _this->Load(folderName, "NewWifiMenuButton", variant, localPlayerBitfield, r8, inaccessible);
-// }
-
-// void PatchWFCMenu_AddCapsule(CtrlMenuInstructionText* _this, u32 bmgId, const Text::Info* info) {
-//     Pages::WFCMainMenu* wfcMenu = SectionMgr::sInstance->curSection->Get<Pages::WFCMainMenu>();
-
-//     Text::Info ninfo;
-//     wfcMenu->regionalButton.SetPaneVisibility("capsul_null", true);
-
-//     _this->SetMessage(bmgId, info);
-// }
-
-// kmCall(0x8064bc54, PatchWFCMenu_AddCapsule);
-// kmCall(0x8064ba90, PatchWFCMenu_LoadButton);

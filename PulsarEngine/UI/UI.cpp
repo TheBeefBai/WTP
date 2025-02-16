@@ -32,7 +32,7 @@ kmWrite32(0x80635058, 0x60000000);
 
 void ExpSection::CreatePages(ExpSection& self, SectionId id) {
     const System* system = System::sInstance;
-    self.hasAutoVote = (id >= SECTION_P1_WIFI_FROOM_VS_VOTING && id <= SECTION_P2_WIFI_FROOM_COIN_VOTING) && system->IsContext(PULSAR_HAW); //can't think of a better way to do this awkward thing, where the usual pages are NOT built
+    // self.hasAutoVote = (id >= SECTION_P1_WIFI_FROOM_VS_VOTING && id <= SECTION_P2_WIFI_FROOM_COIN_VOTING) && system->IsContext(PULSAR_HAW); //can't think of a better way to do this awkward thing, where the usual pages are NOT built
     if(!self.hasAutoVote) self.CreateSectionPages(id);
     memset(&self.pulPages, 0, sizeof(Page*) * PULPAGE_MAX);
     self.CreatePulPages();
@@ -83,19 +83,19 @@ void ExpSection::CreatePulPages() {
                 this->CreateAndInitPage(*this, KO::RaceEndPage::id);
                 this->CreateAndInitPage(*this, KO::WinnerPage::id);
             }
-            if(system->IsContext(PULSAR_HAW)) {
-                if(SectionMgr::sInstance->sectionParams->onlineParams.currentRaceNumber != System::sInstance->netMgr.racesPerGP) this->CreateAndInitPage(*this, ChooseNextTrack::id);
-            }
+            // if(system->IsContext(PULSAR_HAW)) {
+            //     if(SectionMgr::sInstance->sectionParams->onlineParams.currentRaceNumber != System::sInstance->netMgr.racesPerGP) this->CreateAndInitPage(*this, ChooseNextTrack::id);
+            // }
             break;
         case SECTION_P1_WIFI_FRIEND_BALLOON:  //0x72
         case SECTION_P1_WIFI_FRIEND_COIN:     //0x73
         case SECTION_P2_WIFI_FRIEND_BALLOON:  //0x76
         case SECTION_P2_WIFI_FRIEND_COIN:     //0x77
 
-            if(system->IsContext(PULSAR_HAW)) {
-                const SectionParams* sectionParams = SectionMgr::sInstance->sectionParams;
-                if(sectionParams->redWins < 2 && sectionParams->blueWins < 2) this->CreateAndInitPage(*this, ChooseNextTrack::id);
-            }
+            // if(system->IsContext(PULSAR_HAW)) {
+            //     const SectionParams* sectionParams = SectionMgr::sInstance->sectionParams;
+            //     if(sectionParams->redWins < 2 && sectionParams->blueWins < 2) this->CreateAndInitPage(*this, ChooseNextTrack::id);
+            // }
             break;
         case SECTION_SINGLE_P_FROM_MENU:         //0x48
         case SECTION_SINGLE_P_TT_CHANGE_CHARA:   //0x49

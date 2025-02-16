@@ -25,12 +25,12 @@ static void BuildCustomSection(Section& section, SectionId id) {
 kmCall(0x80622088, BuildCustomSection);
 */
 
-static void AddCustomLayers(Section& section, SectionId id) {
-    if(id < SECTION_P1_WIFI_FROOM_VS_VOTING || id > SECTION_P2_WIFI_FROOM_COIN_VOTING
-        || !System::sInstance->IsContext(PULSAR_HAW)) section.AddInitialLayers(id);
-    else section.AddPageLayer(PAGE_SELECT_STAGE_MGR);
-}
-kmCall(0x8062213c, AddCustomLayers);
+// static void AddCustomLayers(Section& section, SectionId id) {
+//     if(id < SECTION_P1_WIFI_FROOM_VS_VOTING || id > SECTION_P2_WIFI_FROOM_COIN_VOTING
+//         || !System::sInstance->IsContext(PULSAR_HAW)) section.AddInitialLayers(id);
+//     else section.AddPageLayer(PAGE_SELECT_STAGE_MGR);
+// }
+// kmCall(0x8062213c, AddCustomLayers);
 
 AutoVote::AutoVote() : readyDuration(0) {}
 
