@@ -27,7 +27,6 @@ enum Context {
     PULSAR_CT = 0,
     PULSAR_200,
     PULSAR_200_WW,
-    PULSAR_99999,
     PULSAR_FEATHER,
     PULSAR_ULTRAS,
     PULSAR_UMTS,

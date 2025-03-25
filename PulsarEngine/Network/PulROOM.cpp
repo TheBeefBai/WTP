@@ -70,7 +70,6 @@ static void BeforeROOMSend(RKNet::PacketHolder<PulROOM>* packetHolder, PulROOM* 
             | itemModeBobomb << PULSAR_GAMEMODEBOBOMB
             | itemModeShock << PULSAR_GAMEMODESHOCK
             | koFinal << PULSAR_KOFINAL
-            | settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_CC) << PULSAR_99999
             | settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_HOSTWINS) << PULSAR_HAW;
 
         u8 raceCount;

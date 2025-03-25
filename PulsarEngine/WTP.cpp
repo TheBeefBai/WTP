@@ -12,10 +12,6 @@ namespace WTP {
 
 Pulsar::System::Inherit CreateWTP(System::Create);
 
-bool System::Is99999cc() {
-    return Racedata::sInstance->racesScenario.settings.engineClass == CC_50;
-}
-
 System::WeightClass System::GetWeightClass(const CharacterId id){
     switch (id)
     {

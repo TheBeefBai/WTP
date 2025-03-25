@@ -136,7 +136,6 @@ void System::UpdateContext() {
 
 
     bool is200 = racedataSettings.engineClass == CC_100 && this->info.Has200cc();
-    bool is99999 = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, HOSTSETTING_CC_99999);
     bool isUltras = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_ALLOW_ULTRAS) == HOSTSETTING_ULTRAS_ENABLED;
     bool isKOFinal = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_FINAL) == KOSETTING_FINAL_ALWAYS;
     bool isOTTChangeCombo = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWCHANGECOMBO) == OTTSETTING_COMBO_ENABLED;
@@ -177,7 +176,6 @@ void System::UpdateContext() {
                 isItemModeFeatherless = newContext & (1 << PULSAR_GAMEMODEFEATHERLESS);
                 isItemModeBobOmb = newContext & (1 << PULSAR_GAMEMODEBOBOMB);
                 isItemModeShock = newContext & (1 << PULSAR_GAMEMODESHOCK);
-                is99999 = newContext & (1 << PULSAR_99999);
                 isUltras = newContext & (1 << PULSAR_ULTRAS);
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
@@ -210,7 +208,7 @@ void System::UpdateContext() {
 
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
-        context |= (is200 << PULSAR_200) | (is99999 << PULSAR_99999) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | 
+        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | 
         (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isUltras << PULSAR_ULTRAS) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | 
         (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | 
         (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | 
