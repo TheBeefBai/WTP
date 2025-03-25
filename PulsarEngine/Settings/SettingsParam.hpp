@@ -169,7 +169,7 @@ enum HostSettingHostCC {
     HOSTSETTING_CC_NORMAL,
     HOSTSETTING_CC_150,
     HOSTSETTING_CC_100,
-    HOSTSETTING_CC_MIRROR
+    HOSTSETTING_CC_99999
 };
 
 enum HostSettingMiiHeads {
