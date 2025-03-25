@@ -38,7 +38,19 @@ Kart::Stats* ApplySpeedModifier(KartId kartId, CharacterId characterId) {
     SpeedModConv speedModConv;
     speedModConv.kmpValue = (KMP::Manager::sInstance->stgiSection->holdersArray[0]->raw->speedMod << 16);
     if(speedModConv.speedMod == 0.0f) speedModConv.speedMod = 1.0f;
-    float factor = System::sInstance->IsContext(PULSAR_200) ? speedFactor : 1.0f;
+    float factor = 1.0f;
+    if (System::sInstance->IsContext(PULSAR_200) && System::sInstance->IsContext(Pulsar::PULSAR_99999)){
+        factor = 2.66f;
+    }
+    else if (System::sInstance->IsContext(PULSAR_200)){
+        factor = speedFactor;
+    }
+    else if (WTP::System::Is99999cc() && gameMode == MODE_PRIVATE_VS || WTP::System::Is99999cc() && gameMode == MODE_VS_RACE || WTP::System::Is99999cc() && gameMode == MODE_PUBLIC_VS){
+        factor = 15.64f;
+    }
+    else if (WTP::System::Is99999cc() && gameMode == MODE_BATTLE || WTP::System::Is99999cc() && gameMode == MODE_PUBLIC_BATTLE || WTP::System::Is99999cc() && gameMode == MODE_PRIVATE_BATTLE){
+        factor = 1.214;
+    }
     factor *= speedModConv.speedMod;
 
     Item::greenShellSpeed = 105.0f * factor;

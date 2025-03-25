@@ -4,14 +4,13 @@
 #include <MarioKartWii/RKNet/RKNetController.hpp>
 #include <MarioKartWii/Item/ItemManager.hpp>
 #include <MarioKartWii/Kart/KartDamage.hpp>
-#include <MarioKartWii/RKNet/ITEM.hpp>
 #include <WTP.hpp>
 
 //WTP Dev Note: Code by Retro Rewind Team
 
 namespace WTP{
-namespace Race
-{
+namespace Race{
+
     static void ChangeBlueProp(Item::ObjProperties* dest, const Item::ObjProperties& rel)
     {
         bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
@@ -26,6 +25,9 @@ namespace Race
         }
         if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
             dest->limit = 5;
+        }
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP){
+            dest->limit = 25;
         }
     }
     kmCall(0x80790b74, ChangeBlueProp);
@@ -43,6 +45,9 @@ namespace Race
             dest->limit = 5;
         }
         if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
+            dest->limit = 25;
+        }
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP){
             dest->limit = 25;
         }
     }
@@ -66,27 +71,18 @@ namespace Race
     }
     kmCall(0x80790bb4, ChangeBombProp);
 
-    /* static void TripleFeatherFeatherOnly(RKNet::ITEMHandler& itemHandler, Item::PlayerInventory& inventory, ItemId id, u8 playerId, bool isItemForcedDueToCapacity){
-        Random random;
-        int rnd;
-        bool itemModeFeather = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
-        const RKNet::Controller* controller = RKNet::Controller::sInstance;
-        const RacedataSettings& racedataSettings = Racedata::sInstance->menusScenario.settings;
-        const GameMode mode = racedataSettings.gamemode;
-        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || mode == MODE_VS_RACE){
-            itemModeFeather = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEFEATHER) ? Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+    static void ChangeStarProp(Item::ObjProperties* dest, const Item::ObjProperties& rel)
+    {
+        bool itemModeShock = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST){
+            itemModeShock = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODESHOCKTILYOUDROP) ? Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         }
-        
-        if(itemModeFeather == Pulsar::WTPSETTING_GAMEMODE_FEATHERONLY){
-            const ItemId item = itemHandler.GetStoredItem(playerId);
-            if(item == BLOOPER){
-                rnd = random.NextLimited(100);
-                if(rnd <= 3){
-                    inventory.currentItemCount = 3;
-                }
-            }
+        new (dest) Item::ObjProperties(rel);
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP){
+            dest->limit = 25;
         }
-    } */
+    }
+    kmCall(0x808d2620, ChangeStarProp);
 
 } // namespace Race   
 } // namespace WTP

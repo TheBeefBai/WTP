@@ -12,6 +12,7 @@
 #include <Config.hpp>
 #include <Network/Network.hpp>
 #include <Network/MatchCommand.hpp>
+#include <Gamemodes/OnlineTT/OnlineTT.hpp>
 
 
 namespace Pulsar {
@@ -25,13 +26,18 @@ class ConfigFile;
 enum Context {
     PULSAR_CT = 0,
     PULSAR_200,
+    PULSAR_200_WW,
+    PULSAR_99999,
     PULSAR_FEATHER,
+    PULSAR_ULTRAS,
     PULSAR_UMTS,
     PULSAR_MEGATC,
     PULSAR_HAW,
     PULSAR_MIIHEADS,
     PULSAR_MODE_OTT,
+    PULSAR_CHANGECOMBO,
     PULSAR_MODE_KO,
+    PULSAR_KOFINAL,
     PULSAR_CHARRESTRICTLIGHT,
     PULSAR_CHARRESTRICTMEDIUM,
     PULSAR_CHARRESTRICTHEAVY,
@@ -39,8 +45,10 @@ enum Context {
     PULSAR_BIKERESTRICT,
     PULSAR_GAMEMODERANDOM,
     PULSAR_GAMEMODEBLAST,
+    PULSAR_GAMEMODEFEATHERLESS,
+    PULSAR_GAMEMODEBOBOMB,
+    PULSAR_GAMEMODESHOCK,
     PULSAR_GAMEMODEFEATHER,
-    PULSAR_GAMEMODEITEMRAIN,
     PULSAR_CONTEXT_COUNT,
 };
 
@@ -58,12 +66,7 @@ public:
     void InitSettings(const u16* totalTrophyCount) const;
     void UpdateContext();
     static void UpdateContextWrapper();
-    static inline void CacheInvalidateAddress(register u32 address) {
-    asm(dcbst 0, address;);
-    asm(sync;);
-    asm(icbi 0, address;);
-    asm(isync;);
-}
+    static void ClearOttContext();
 protected:
     //Virtual
     virtual void AfterInit() {};
@@ -125,6 +128,7 @@ public:
     KO::Mgr* koMgr;
     u32 ottVoteState;
     bool ottHideNames;
+    OTT::Mgr ottMgr;
     u8 nonTTGhostPlayersCount; //because a ghost can be added in vs, racedata's playercount is not reliable
 
 private:

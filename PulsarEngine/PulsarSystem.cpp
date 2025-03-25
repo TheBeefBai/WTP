@@ -12,6 +12,7 @@
 #include <Config.hpp>
 #include <SlotExpansion/CupsConfig.hpp>
 #include <core/egg/DVD/DvdRipper.hpp>
+
 namespace Pulsar {
 
 System* System::sInstance = nullptr;
@@ -57,6 +58,8 @@ void System::Init(const ConfigFile& conf) {
         }
     }
     strncpy(this->modFolderName, conf.header.modFolderName, IOS::ipcMaxFileName);
+    static char* pulMagic = reinterpret_cast<char*>(0x800017CC);
+    strcpy(pulMagic, "PUL2");
 
     //InitInstances
     CupsConfig::sInstance = new CupsConfig(conf.GetSection<CupsHolder>());
@@ -116,21 +119,27 @@ void System::InitSettings(const u16* totalTrophyCount) const {
 
 void System::UpdateContext() {
     const RacedataSettings& racedataSettings = Racedata::sInstance->menusScenario.settings;
-    this->ottVoteState = OTT::COMBO_NONE;
+    const GameMode mode = racedataSettings.gamemode;
+    this->ottMgr.Reset();
     const Settings::Mgr& settings = Settings::Mgr::Get();
     bool isCT = true;
     bool isHAW = false;
     bool isKO = false;
     bool isOTT = false;
+    bool isOTTOnline = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_WWMODE) == WWMODE_OTT && mode == MODE_PUBLIC_VS;
     bool isMiiHeads = settings.GetSettingValue(Settings::SETTINGSTYPE_RACE, SETTINGRACE_RADIO_MII);
+    bool is200Online = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_WWMODE) == WWMODE_200 && mode == MODE_PUBLIC_VS;
 
     const RKNet::Controller* controller = RKNet::Controller::sInstance;
-    const GameMode mode = racedataSettings.gamemode;
     Network::Mgr& netMgr = this->netMgr;
     const u32 sceneId = GameScene::GetCurrent()->id;
 
 
     bool is200 = racedataSettings.engineClass == CC_100 && this->info.Has200cc();
+    bool is99999 = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, HOSTSETTING_CC_99999);
+    bool isUltras = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_ALLOW_ULTRAS) == HOSTSETTING_ULTRAS_ENABLED;
+    bool isKOFinal = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_FINAL) == KOSETTING_FINAL_ALWAYS;
+    bool isOTTChangeCombo = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWCHANGECOMBO) == OTTSETTING_COMBO_ENABLED;
     bool isCharRestrictLight = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_LIGHT;
     bool isCharRestrictMedium = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_MEDIUM;
     bool isCharRestrictHeavy = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_CHARRESTRICT) == WTPSETTING_CHARRESTRICT_HEAVY;
@@ -139,7 +148,9 @@ void System::UpdateContext() {
     bool isItemModeRandom = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_RANDOM;
     bool isItemModeBlast = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BLASTBLITZ;
     bool isItemModeFeather = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERONLY;
-    bool isItemModeItemRain = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_ITEMRAIN;
+    bool isItemModeFeatherless = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERLESS;
+    bool isItemModeBobOmb = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BOBOMBBLAST;
+    bool isItemModeShock = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_SHOCKTILYOUDROP;
     bool isFeather = this->info.HasFeather();
     bool isUMTs = this->info.HasUMTs();
     bool isMegaTC = this->info.HasMegaTC();
@@ -154,6 +165,7 @@ void System::UpdateContext() {
             case(RKNet::ROOMTYPE_FROOM_NONHOST):
                 isCT = mode != MODE_BATTLE && mode != MODE_PUBLIC_BATTLE && mode != MODE_PRIVATE_BATTLE;
                 newContext = netMgr.hostContext;
+                isKOFinal = newContext & (1 << PULSAR_KOFINAL);
                 isCharRestrictLight = newContext & (1 << PULSAR_CHARRESTRICTLIGHT);
                 isCharRestrictMedium = newContext & (1 << PULSAR_CHARRESTRICTMEDIUM);
                 isCharRestrictHeavy = newContext & (1 << PULSAR_CHARRESTRICTHEAVY);
@@ -162,14 +174,21 @@ void System::UpdateContext() {
                 isItemModeRandom = newContext & (1 << PULSAR_GAMEMODERANDOM);
                 isItemModeBlast = newContext & (1 << PULSAR_GAMEMODEBLAST);
                 isItemModeFeather = newContext & (1 << PULSAR_GAMEMODEFEATHER);
-                isItemModeItemRain = newContext & (1 << PULSAR_GAMEMODEITEMRAIN);
+                isItemModeFeatherless = newContext & (1 << PULSAR_GAMEMODEFEATHERLESS);
+                isItemModeBobOmb = newContext & (1 << PULSAR_GAMEMODEBOBOMB);
+                isItemModeShock = newContext & (1 << PULSAR_GAMEMODESHOCK);
+                is99999 = newContext & (1 << PULSAR_99999);
+                isUltras = newContext & (1 << PULSAR_ULTRAS);
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
                 isOTT = newContext & (1 << PULSAR_MODE_OTT);
+                isOTTOnline |= newContext & (1 << PULSAR_MODE_OTT);
+                is200Online |= newContext & (1 << PULSAR_200_WW);
                 isMiiHeads = newContext & (1 << PULSAR_MIIHEADS);
                 if(isOTT) {
-                    isUMTs &= newContext & (1 << PULSAR_UMTS);
+                    isUMTs = newContext & (1 << PULSAR_UMTS);
                     isFeather &= newContext & (1 << PULSAR_FEATHER);
+                    isOTTChangeCombo = newContext & (1 << PULSAR_CHANGECOMBO);
                 }
                 break;
             default: isCT = false;
@@ -181,15 +200,25 @@ void System::UpdateContext() {
         if(isOTT) {
             isFeather &= (ottOffline == OTTSETTING_OFFLINE_FEATHER);
             isUMTs &= ~settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWUMTS);
+            isUltras &= ~settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_ALLOW_ULTRAS);
         }
     }
     this->netMgr.hostContext = newContext;
 
+    // First clear everything except 200_WW and OTTOnline bits
+    u32 preserved = this->context & ((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT));
+
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
-        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | (isItemModeFeather << PULSAR_GAMEMODEFEATHER) | (isItemModeItemRain << PULSAR_GAMEMODEITEMRAIN);
+        context |= (is200 << PULSAR_200) | (is99999 << PULSAR_99999) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | 
+        (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isUltras << PULSAR_ULTRAS) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | 
+        (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | 
+        (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | 
+        (isItemModeFeather << PULSAR_GAMEMODEFEATHER) | (isItemModeFeatherless << PULSAR_GAMEMODEFEATHERLESS) | 
+        (isItemModeBobOmb << PULSAR_GAMEMODEBOBOMB) | (isItemModeShock << PULSAR_GAMEMODESHOCK) | 
+        (isKOFinal << PULSAR_KOFINAL) | (isOTTChangeCombo << PULSAR_CHANGECOMBO);
     }
-    this->context = context;
+    this->context = context | preserved;
 
     //Create temp instances if needed:
     /*
@@ -216,6 +245,16 @@ void System::UpdateContextWrapper() {
 }
 
 static Pulsar::Settings::Hook UpdateContext(System::UpdateContextWrapper);
+
+void System::ClearOttContext()
+{
+    bool isOTTEnabled = Settings::Mgr::Get().GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_OFFLINE);
+    if (!isOTTEnabled) {
+        sInstance->context &= ~(1 << PULSAR_MODE_OTT);
+    }
+}
+
+static Pulsar::Settings::Hook UpdateOTTContext(System::ClearOttContext);
 
 s32 System::OnSceneEnter(Random& random) {
     System* self = System::sInstance;
