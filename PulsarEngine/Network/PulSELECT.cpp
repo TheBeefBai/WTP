@@ -197,8 +197,9 @@ static void DecideCC(ExpSELECTHandler& handler) {
             if (result < 100 - (prob100 + prob150)) ccClass = 3;
             else if (result < 100 - prob100) ccClass = 2;
         }
-        if (is200 == Pulsar::WWMODE_200 || ccSetting == HOSTSETTING_CC_99999) ccClass = 1;
+        if (is200 == Pulsar::WWMODE_200) ccClass = 1;
         else if (ccSetting == HOSTSETTING_CC_150) ccClass = 2;
+        else if (ccSetting == HOSTSETTING_CC_MIRROR) ccClass = 3;
         handler.toSendPacket.engineClass = ccClass;
     }
 
