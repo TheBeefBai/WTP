@@ -12,6 +12,7 @@ extern u32 RemoveBackgroundBlur;
 namespace WTP {
     class System : public Pulsar::System {
         public:
+        static bool Is99999cc();
 
         enum WeightClass{
         LIGHTWEIGHT,
