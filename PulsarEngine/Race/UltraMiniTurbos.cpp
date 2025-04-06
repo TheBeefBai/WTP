@@ -57,13 +57,13 @@ kmWrite32(0x80588938, 0x7c040378); //setup "charged" for next function
 kmWrite32(0x8058893c, 0x48000010); //takes MT charge check and parses it into SetBikeDriftTiers
 
 void SetBikeDriftTiers(Kart::MovementBike& movement, bool charged){
-    bool isSMT = true;
+    bool isSMT = System::sInstance->IsContext(PULSAR_UMTS);
     if (charged){
         movement.driftState = 2;
         KartType type = movement.GetType();
         const s16 mtCharge = movement.mtCharge;
         const GameMode gameMode = Racedata::sInstance->racesScenario.settings.gamemode;
-        if (type == OUTSIDE_BIKE && isSMT == true){
+        if (type == OUTSIDE_BIKE && isSMT){
             if (mtCharge >= 570) movement.driftState = 3;
         }
     }
@@ -184,8 +184,8 @@ void LoadOrangeSparkEffects(ExpPlayerEffects& effects, EGG::Effect** effectArray
     KartType type = effects.kartPlayer->GetType();
     const u32 mtCharge = effects.kartPlayer->pointers.kartMovement->mtCharge;
     const GameMode gameMode = Racedata::sInstance->racesScenario.settings.gamemode;
-    bool isSMT = true;
-    if(mtCharge >= 570 && type == OUTSIDE_BIKE && isSMT == true) {
+    bool isSMT = System::sInstance->IsContext(PULSAR_UMTS);
+    if(mtCharge >= 570 && type == OUTSIDE_BIKE && isSMT) {
         effects.CreateAndUpdateEffectsByIdx(effects.rk_orangeMT, 0, 2, playerMat2, wheelPos, updateScale);
         effects.FollowFadeEffectsByIdx(effectArray, firstEffectIndex, lastEffectIndex, playerMat2, wheelPos, updateScale);
     }

@@ -5,6 +5,7 @@
 #include <MarioKartWii/System/Identifiers.hpp>
 #include <MarioKartWii/Race/RaceData.hpp>
 
+extern u32 FPSPatchHook;
 extern u32 UltraUncutHook;
 extern u32 RemoveBloom;
 extern u32 RemoveBackgroundBlur;

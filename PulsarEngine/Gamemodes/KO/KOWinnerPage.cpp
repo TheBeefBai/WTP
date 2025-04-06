@@ -11,6 +11,7 @@ namespace KO {
 WinnerPage::WinnerPage() {
     status = WAITING_STATS;
     timeRecvStats = 0;
+    duration = 0;
     onClickHandler.subject = this;
     onClickHandler.ptmf = &WinnerPage::HandleClick;
 }
@@ -70,6 +71,9 @@ void WinnerPage::DisplayWinner() {
 }
 
 void WinnerPage::AfterControlUpdate() {
+    const u32 maxDuration = 600;
+    this->duration++;
+
     if(this->status == WAITING_STATS) {
         const Mgr* mgr = System::sInstance->koMgr;
         RKNet::Controller* controller = RKNet::Controller::sInstance;
@@ -123,6 +127,10 @@ void WinnerPage::AfterControlUpdate() {
     }
     else if(status == NO_STATS_TIME_ELAPSED) {
         if(duration == 900) this->EndStateAnimated(0, 0.0f);
+    }
+
+    if (duration >= maxDuration) {
+        this->EndStateAnimated(0, 0.0f);
     }
 }
 

@@ -9,6 +9,8 @@
 
 //https://wiki.tockdom.com/wiki/LEX_(File_Format)
 
+//WTP Dev Note: Fix by ToadetteHackFan
+
 namespace LECODE {
 
 void LexMgr::Reset() {
@@ -28,9 +30,9 @@ const KMPHeader* LexMgr::LoadLEXAndKMP(u32, const char* kmpString) {
         if(header != nullptr) {
             if(header->magic == LEXHeader::goodMagic && header->majorVersion == 1) {
 
-                LEXSectionHeader* section = reinterpret_cast<LEXSectionHeader*>(reinterpret_cast<u8*>(header) + header->offsetToFirstSection);
-                u8* data = reinterpret_cast<u8*>(section) + sizeof(LEXSectionHeader);
+                LEXSectionHeader* section = reinterpret_cast<LEXSectionHeader*>(reinterpret_cast<u8*>(header) + header->offsetToFirstSection);                
                 while(section->magic != 0) {
+                    u8* data = reinterpret_cast<u8*>(section) + sizeof(LEXSectionHeader);
                     switch(section->magic) {
                         case SET1::magic:
                             self.set1 = reinterpret_cast<SET1*>(section);

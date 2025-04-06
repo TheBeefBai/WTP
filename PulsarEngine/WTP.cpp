@@ -116,7 +116,23 @@ namespace Codes
             }
             kmCall(0x805793AC, GetMegaFOV);
         }
+        namespace FPSPatch
+        {
+            //Force 30 FPS [Vabold]
+            kmWrite32(0x80554224, 0x3C808000);
+            kmWrite32(0x80554228, 0x88841204);
+            kmWrite32(0x8055422C, 0x48000044);
 
+            void FPSPatch() {
+            FPSPatchHook = 0x00;
+            if (static_cast<Pulsar::MenuSettingChangeFPSMode>(Pulsar::Settings::Mgr::Get().GetSettingValue(static_cast<Pulsar::Settings::Type>(Pulsar::Settings::SETTINGSTYPE_MENU), Pulsar::SETTINGMENU_CHANGEFPS)) == Pulsar::MENUSETTING_FPS_30) {
+            FPSPatchHook = 0x00FF0100;
+            }
+        }
+            static PageLoadHook PatchFPS(FPSPatch);
+        } // namespace PatchFPS
+
+        }
         namespace UltraUncut
         {
             asmFunc GetUltraUncut() {

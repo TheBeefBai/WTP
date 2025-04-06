@@ -48,6 +48,7 @@ enum MenuSettings {
     SETTINGMENU_RADIO_LAYOUT = 1,
     SETTINGMENU_RADIO_MUSIC = 2,
     SETTINGMENU_BLOOM = 3,
+    SETTINGMENU_CHANGEFPS = 4,
     SETTINGMENU_SCROLL_BOOT = 0 + 6
 };
 
@@ -91,6 +92,7 @@ enum WTPSettings {
     SETTINGWTP_CHARRESTRICT = 1,
     SETTINGWTP_VEHICLERESTRICT = 2,
     SETTINGWTP_BRAKEDRIFT = 3,
+    SETTINGWTP_INPUTVIEWER = 4,
     SETTINGWTP_GAMEMODE = 0 + 6,
     SETTINGWTP_WWMODE = 1 + 6,
 };
@@ -115,6 +117,11 @@ enum MenuSettingMusic {
 enum MenuSettingBloom {
     MENUSETTING_BLOOM_DISABLED,
     MENUSETTING_BLOOM_ENABLED,
+};
+
+enum MenuSettingChangeFPSMode {
+    MENUSETTING_FPS_60,
+    MENUSETTING_FPS_30,
 };
 
 enum MenuSettingBoot {
@@ -264,6 +271,11 @@ enum WTPSettingVehicleRestrict {
 enum WTPSettingBrakeDrift {
     WTPSETTING_BRAKEDRIFT_ENABLED,
     WTPSETTING_BRAKEDRIFT_DISABLED,
+};
+
+enum WTPSettingInputDisplay {
+    WTPSETTING_INPUTDISPLAY_DISABLED,
+    WTPSETTING_INPUTDISPLAY_ENABLED,
 };
 
 enum WTPSettingGamemode {

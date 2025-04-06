@@ -33,9 +33,15 @@ static void SetStartingItem(Item::PlayerInventory& inventory, ItemId id, bool is
             isFeather = (mode == TTMODE_150_FEATHER || mode == TTMODE_200_FEATHER);
         }
         else isFeather = system->IsContext(PULSAR_FEATHER);
-        if (isFeather) id = BLOOPER;
-        inventory.SetItem(id, isItemForcedDueToCapacity);
-        if (isFeather) inventory.currentItemCount = 3;
+        if (isFeather && RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_VS_REGIONAL && RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_JOINING_REGIONAL) {
+            id = BLOOPER;
+            inventory.SetItem(id, isItemForcedDueToCapacity);
+            if (isFeather) inventory.currentItemCount = 3;
+        }
+        else{
+            id = TRIPLE_MUSHROOM;
+            inventory.SetItem(id, isItemForcedDueToCapacity);
+        }
     }
 }
 kmCall(0x80799808, SetStartingItem);

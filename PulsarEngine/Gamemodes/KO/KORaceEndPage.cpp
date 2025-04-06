@@ -14,12 +14,18 @@ void RaceEndPage::OnActivate() {
     this->countdown.SetInitial(10.0f);
     this->countdown.isActive = true;
     this->countdownControl.AnimateCurrentCountDown();
+    this->frameCounter = 0;
 }
 
 void RaceEndPage::BeforeControlUpdate() {
     this->countdown.Update();
     this->countdownControl.AnimateCurrentCountDown();
-    if(this->duration == 10 * 60) this->OnButtonClick(this->buttons[0], 0);
+    
+    this->frameCounter++;
+    if (this->frameCounter >= 600) {
+        this->OnButtonClick(this->buttons[0], 0);
+        this->frameCounter = 0;
+    }
 }
 
 int RaceEndPage::GetMessageBMG() const {

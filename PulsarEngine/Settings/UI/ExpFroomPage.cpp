@@ -4,6 +4,7 @@
 #include <Settings/UI/ExpFroomPage.hpp>
 #include <UI/TeamSelect/TeamSelect.hpp>
 #include <UI/UI.hpp>
+#include <Settings/UI/ExpWFCMainPage.hpp>
 
 namespace Pulsar {
 namespace UI {
@@ -52,6 +53,12 @@ void ExpFroom::ExtOnButtonSelect(PushButton& button, u32 hudSlotId) {
     }
     else if(button.buttonId == 6) this->bottomText.SetMessage(BMG_TEAMS_BOTTOM, 0);
     else this->OnButtonSelect(button, hudSlotId);
+}
+
+void ExpFroom::OnActivate() {
+    ExpWFCModeSel::ClearModeContexts();
+    System::sInstance->netMgr.region = 0x520;
+    FriendRoom::OnActivate();
 }
 
 void ExpFroom::OnSettingsButtonClick(PushButton& button, u32 hudSlotId) {
