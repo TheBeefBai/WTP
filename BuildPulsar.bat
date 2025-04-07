@@ -11,9 +11,9 @@ SET "debug="
 ::if "%1" equ "-d" SET "cwDWARF=-g"
 
 :: Sources and Compiler
-SET ENGINE="C:\Users\sauxy\OneDrive\Documents\WTP-dev\KamekInclude"
-set GAMESOURCE="C:\Users\sauxy\OneDrive\Documents\WTP-dev\GameSource"
-SET PULSAR="C:\Users\sauxy\OneDrive\Documents\WTP-dev\PulsarEngine"
+SET ENGINE="C:\Users\sauxy\OneDrive\Documents\GitHub\WTP\KamekInclude"
+set GAMESOURCE="C:\Users\sauxy\OneDrive\Documents\GitHub\WTP\GameSource"
+SET PULSAR="C:\Users\sauxy\OneDrive\Documents\GitHub\WTP\PulsarEngine"
 
 :: Change this as necessary depending on where you put CodeWarrior
 SET CC=""C:\Users\sauxy\OneDrive\Documents\CLT\mwcceppc.exe""
@@ -47,7 +47,7 @@ FOR %%H IN (%CPPFILES%) DO (
 
 :: Link
 echo Linking... %time%
-"C:\Users\sauxy\OneDrive\Documents\WTP-dev\KamekLinker\Kamek.exe" "build/kamek.o" %OBJECTS% %debug% -dynamic -externals="%GAMESOURCE%/symbols.txt" -versions="%GAMESOURCE%/versions.txt" -output-combined=build\Code.pul
+"C:\Users\sauxy\OneDrive\Documents\GitHub\WTP\KamekLinker\Kamek.exe" "build/kamek.o" %OBJECTS% %debug% -dynamic -externals="%GAMESOURCE%/symbols.txt" -versions="%GAMESOURCE%/versions.txt" -output-combined=build\Code.pul
 
 if %ErrorLevel% equ 0 if NOT "!RIIVO!" == "" (
     xcopy /Y build\*.pul "%RIIVO%\Binaries" /i /q

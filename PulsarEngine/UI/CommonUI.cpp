@@ -11,6 +11,7 @@
 #include <Network/PulSELECT.hpp>
 #include <Network/PacketExpansion.hpp>
 #include <AutoTrackSelect/ChooseNextTrack.hpp>
+#include <Settings/UI/SettingsPanel.hpp>
 
 //WTP Dev Note: Fixes by Optilizer
 
@@ -47,6 +48,10 @@ void LoadCorrectPageAfterMultiDrift(Pages::MultiDriftSelect* page, u32 animDirec
             handler.toSendPacket.playersData[i].kart = sectionMgr->sectionParams->karts[i];
         }
         handler.toSendPacket.allowChangeComboStatus = Network::SELECT_COMBO_SELECTED;
+    }
+    else if(sectionMgr->curSection->Get<Pages::VR>() != nullptr && page->nextPageId == static_cast<PageId>(PULPAGE_SETTINGS)) {
+        ExpSection::GetSection()->CreateAndInitPage(*ExpSection::GetSection(), PULPAGE_SETTINGS);
+        return;
     }
     else if(sectionMgr->curSection->Get<Pages::VR>() != nullptr) {
         page->nextPageId = IsBattle() ? PAGE_BATTLE_CUP_SELECT : PAGE_CUP_SELECT;

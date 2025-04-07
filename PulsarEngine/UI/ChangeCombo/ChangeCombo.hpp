@@ -21,11 +21,17 @@ namespace UI {
 static void RandomizeCombo();
 class ExpVR : public Pages::VR {
 public:
-    static const int randomDuration = 152; //2.5s
+    static const int randomDuration = 60; //1s
+    static const int voteDuration = 1620; //30s
     static_assert(randomDuration % 4 == 0, "Random Combo Duration");
+    static_assert(voteDuration % 4 == 0, "Vote Duration");
     ExpVR();
     void OnInit() override;
-    private:
+    void OnButtonSelect(PushButton& button, u32 hudSlotId);
+    s32 rouletteCounter;
+    CountDown countdown;
+    CountDownTimerControl countdownControl;
+private:
     void RandomizeComboVR(PushButton& button, u32 hudSlotId);
     void ChangeCombo(PushButton& button, u32 hudSlotId);
     void OnSettingsButtonClick(PushButton& button, u32 hudSlotId);
@@ -40,6 +46,10 @@ public:
     PushButton settingsButton;
 public:
     u8 comboButtonState; //1 = randomize, 2 = change
+    PulPageId topSettingsPage;
+    bool areControlsHidden;
+    PageId nextPageId; //when you press a button
+    u8 menuState;
 };
 
 class ExpCharacterSelect : public Pages::CharacterSelect {

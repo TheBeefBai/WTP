@@ -98,7 +98,7 @@ void SettingsPanel::OnInit() {
     }
     MenuInteractable::OnInit();
     this->SetTransitionSound(0, 0);
-};
+}
 
 UIControl* SettingsPanel::CreateExternalControl(u32 id) {
     const char* variant = "SAVE";
