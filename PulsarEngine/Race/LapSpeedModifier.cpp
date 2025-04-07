@@ -45,7 +45,7 @@ Kart::Stats* ApplySpeedModifier(KartId kartId, CharacterId characterId) {
     if(speedModConv.speedMod == 0.0f) speedModConv.speedMod = 1.0f;
     float factor = 1.0f;
     if (System::sInstance->IsContext(PULSAR_200) && System::sInstance->IsContext(Pulsar::PULSAR_99999)){
-        factor = 15.64f;
+        factor = 15.63f;
     }
     else if (System::sInstance->IsContext(PULSAR_200)){
         factor = speedFactor;
