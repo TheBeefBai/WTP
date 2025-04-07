@@ -132,7 +132,6 @@ namespace Codes
             static PageLoadHook PatchFPS(FPSPatch);
         } // namespace PatchFPS
 
-        }
         namespace UltraUncut
         {
             asmFunc GetUltraUncut() {
@@ -163,10 +162,13 @@ namespace Codes
               const RacedataScenario& scenario = Racedata::sInstance->racesScenario;
               const GameMode mode = scenario.settings.gamemode;
 
-              if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || mode == MODE_VS_RACE){
+              if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_NONE){
                 if (System::sInstance->IsContext(Pulsar::PULSAR_ULTRAS) == Pulsar::HOSTSETTING_ULTRAS_DISABLED) {
                     UltraUncutHook = 0x00;
                    }
+              }
+              if(mode == MODE_TIME_TRIAL) {
+                UltraUncutHook = 0x00;
               }
             }
             static PageLoadHook PatchUltraUncut(UltraUncutPatch);

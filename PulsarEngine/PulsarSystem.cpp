@@ -299,4 +299,10 @@ const char System::breff[] = "/Effect/Pulsar.breff";
 const char System::breft[] = "/Effect/Pulsar.breft";
 const char* System::ttModeFolders[] ={ "150", "200", "150F", "200F" };
 
+//WTP Pack ID
+kmWrite32(0x800017D0, 0x520);
+
+//WTP Pack Version
+kmWrite32(0x800017D4, 42);
+
 }//namespace Pulsar
