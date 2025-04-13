@@ -132,6 +132,28 @@ namespace Codes
             static PageLoadHook PatchFPS(FPSPatch);
         } // namespace PatchFPS
 
+        namespace AntiLagStart
+        {
+            //Anti Lag Start [Ro]
+            extern "C" void sInstance__8Racedata(void*);
+            asmFunc AntiLagStart(){
+                ASM(
+                nofralloc;
+            loc_0x0:
+            lwz r12, sInstance__8Racedata@l(r30);
+            lwz r12, 0xB70(r12);
+            cmpwi r12, 0x7;
+            blt- loc_0x14;
+            li r3, 0x1;
+
+            loc_0x14:
+            cmpwi r3, 0x0;
+            blr;
+            )
+            }
+            kmCall(0x80533430, AntiLagStart);
+        } // namespace AntiLagStart
+
         namespace UltraUncut
         {
             asmFunc GetUltraUncut() {

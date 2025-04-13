@@ -14,8 +14,8 @@ namespace UI {
 //SETTINGS PANEL
 SettingsPanel::SettingsPanel()
 {
-    bmgOffset = BMG_USERSETTINGSOFFSET;
-    sheetIdx = Settings::Params::pulsarPageCount;
+    bmgOffset = 0;
+    sheetIdx = 0;
     catIdx = 0;
     externControlCount = 3;
     internControlCount = Settings::Params::maxRadioCount + Settings::Params::maxScrollerCount;

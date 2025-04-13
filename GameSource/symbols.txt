@@ -1884,8 +1884,9 @@ NHTTPCreateRequest__FPCciPvUiPvPv = 0x801d8ff8
 sprintf = 0x80011a2c
 
 WWFC_CUSTOM_REGION = 0x80005efc
-FPSPatchHook = 0x80001202
 UltraUncutHook = 0x80001201
+FPSPatchHook = 0x80001202
+DefaultItemHook = 0x80001204
 RemoveBloom = 0x802575DF
 RemoveBackgroundBlur = 0x80258184
 beginFrame = 0x8020fe24
@@ -1901,7 +1902,6 @@ GetCurrentContext__2OSFv = 0x801a1ecc
 __ct__Q25Pages4VoteFv = 0x80642f90
 __dt__Q25Pages4VoteFv = 0x806430bc
 BeforeControlUpdate__Q25Pages4VoteFv = 0x806437e8
-BeforeControlUpdate__Q36Pulsar2UI13SettingsPanelFv =
 GetRuntimeTypeInfo__Q25Pages4VoteCFv = 0x8064464c
 OnInit__Q25Pages4VoteFv = 0x80643168
 OnDispose__Q25Pages4VoteFv = 0x806433c8
@@ -1915,3 +1915,7 @@ HandleSelect__18RadioButtonControlFUiUi = 0x806062d8
 HandleClick__18RadioButtonControlFUiUi = 0x80606620
 HandleDeselect__13UpDownControlFUiUi = 0x8063f7c4
 OnActivate__Q36Pulsar2UI5ExpVRFv = 0x8064a84c
+
+current_time = 0x800f24c8
+Update__8ElineMgrFv = 0x8052d888
+UpdateFromPrevRace__16RacedataScenarioFv = 0x8052f1e0
