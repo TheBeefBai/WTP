@@ -61,3 +61,4 @@ PulsarEngine/AntiCheat.cpp
 PulsarEngine/AntiCheat.hpp
 build/Code.pul
 build/Code.pul
+.env

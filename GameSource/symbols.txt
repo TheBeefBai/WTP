@@ -841,6 +841,8 @@ GetWheelPhysicsHolder__Q24Kart4LinkFUi = 0x80590704
 GetStats__Q24Kart4LinkCFv = 0x80590874
 GetType__Q24Kart4LinkCFv = 0x80590a10
 GetPlayerIdx__Q24Kart4LinkCFv = 0x80590a5c
+GetPosition__Q24Kart4LinkCFv = 0x8059020c
+GetMovement__Q24Kart4LinkFv = 0x8059077c
 
 #KartPlayer
 GetDriftState__Q24Kart6PlayerCFv = 0x805911d8
@@ -1733,7 +1735,9 @@ AddUseEVENTEntry__Q24Item3ObjF9ItemObjIdUc = 0x8079c220
 LoadGraphicsImplicitBRRESNoFunc__Q24Item3ObjFPCcPCcPQ34Item3Obj8AnmParamQ44nw4r3g3d6ScnMdl12BufferOptionUi = 0x8079ff5c
 LoadGraphicsImplicitBRRES__Q24Item3ObjFPCcPCcUcPQ34Item3Obj8AnmParamQ44nw4r3g3d6ScnMdl12BufferOptionPv = 0x8079ffdc
 LoadGraphics__Q24Item3ObjFPCcPCcPCcUcPQ34Item3Obj8AnmParamQ44nw4r3g3d6ScnMdl12BufferOptionPvUi = 0x807a0040
+CreateItemDirect__Q24Item7ManagerF9ItemObjIdPC4Vec3P4Vec3Ui = 0x80799fbc
 DeployBlooper__Q24Item8GessoMgrFUs = 0x807a9128
+DisappearDueToExcess__Q24Item3ObjFb = 0x807a6c14
 
 #ItemSlot
 DecideItem__Q24Item12ItemSlotDataFUsUcbbPQ24Item6Player = 0x807bb42c

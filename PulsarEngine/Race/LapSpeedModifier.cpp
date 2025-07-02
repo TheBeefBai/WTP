@@ -44,7 +44,7 @@ Kart::Stats* ApplySpeedModifier(KartId kartId, CharacterId characterId) {
     speedModConv.kmpValue = (KMP::Manager::sInstance->stgiSection->holdersArray[0]->raw->speedMod << 16);
     if(speedModConv.speedMod == 0.0f) speedModConv.speedMod = 1.0f;
     float factor = 1.0f;
-    if (System::sInstance->IsContext(PULSAR_200) && System::sInstance->IsContext(Pulsar::PULSAR_99999)){
+    if (System::sInstance->IsContext(PULSAR_200) && System::sInstance->IsContext(Pulsar::PULSAR_99999) && (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST)) {
         factor = 15.63f;
     }
     else if (System::sInstance->IsContext(PULSAR_200)){

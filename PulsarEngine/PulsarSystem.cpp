@@ -136,7 +136,7 @@ void System::UpdateContext() {
 
 
     bool is200 = racedataSettings.engineClass == CC_100 && this->info.Has200cc();
-    bool is99999 = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, HOSTSETTING_CC_99999);
+    bool is99999 = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_CC) == HOSTSETTING_CC_99999;
     bool isUltras = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_ALLOW_ULTRAS) == HOSTSETTING_ULTRAS_ENABLED;
     bool isKOFinal = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_FINAL) == KOSETTING_FINAL_ALWAYS;
     bool isOTTChangeCombo = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWCHANGECOMBO) == OTTSETTING_COMBO_ENABLED;
@@ -151,6 +151,7 @@ void System::UpdateContext() {
     bool isItemModeFeatherless = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERLESS;
     bool isItemModeBobOmb = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BOBOMBBLAST;
     bool isItemModeShock = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_SHOCKTILYOUDROP;
+    bool isItemModeRain = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_ITEMRAIN;
     bool isFeather = this->info.HasFeather();
     bool isUMTs = this->info.HasUMTs();
     bool isMegaTC = this->info.HasMegaTC();
@@ -177,7 +178,7 @@ void System::UpdateContext() {
                 isItemModeFeatherless = newContext & (1 << PULSAR_GAMEMODEFEATHERLESS);
                 isItemModeBobOmb = newContext & (1 << PULSAR_GAMEMODEBOBOMB);
                 isItemModeShock = newContext & (1 << PULSAR_GAMEMODESHOCK);
-                is99999 = newContext & (1 << PULSAR_99999);
+                isItemModeRain = newContext & (1 << PULSAR_GAMEMODEITEMRAIN);
                 isUltras = newContext & (1 << PULSAR_ULTRAS);
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
@@ -216,7 +217,8 @@ void System::UpdateContext() {
         (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | 
         (isItemModeFeather << PULSAR_GAMEMODEFEATHER) | (isItemModeFeatherless << PULSAR_GAMEMODEFEATHERLESS) | 
         (isItemModeBobOmb << PULSAR_GAMEMODEBOBOMB) | (isItemModeShock << PULSAR_GAMEMODESHOCK) | 
-        (isKOFinal << PULSAR_KOFINAL) | (isOTTChangeCombo << PULSAR_CHANGECOMBO);
+        (isKOFinal << PULSAR_KOFINAL) | (isOTTChangeCombo << PULSAR_CHANGECOMBO) | 
+        (isItemModeRain << PULSAR_GAMEMODEITEMRAIN);
     }
     this->context = context | preserved;
 
@@ -290,6 +292,12 @@ asmFunc System::GetNonTTGhostPlayersCount() {
 //Unlock Everything Without Save (_tZ)
 kmWrite32(0x80549974, 0x38600001);
 
+//WTP Pack ID
+kmWrite32(0x800017D0, 0x520);
+
+//WTP Pack Version
+kmWrite32(0x800017D4, 5);
+
 //Skip ESRB page
 kmRegionWrite32(0x80604094, 0x4800001c, 'E');
 
@@ -298,11 +306,5 @@ const char System::CommonAssets[] = "/CommonAssets.szs";
 const char System::breff[] = "/Effect/Pulsar.breff";
 const char System::breft[] = "/Effect/Pulsar.breft";
 const char* System::ttModeFolders[] ={ "150", "200", "150F", "200F" };
-
-//WTP Pack ID
-kmWrite32(0x800017D0, 0x520);
-
-//WTP Pack Version
-kmWrite32(0x800017D4, 42);
 
 }//namespace Pulsar
