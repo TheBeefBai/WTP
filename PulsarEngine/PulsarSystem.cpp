@@ -12,6 +12,7 @@
 #include <Config.hpp>
 #include <SlotExpansion/CupsConfig.hpp>
 #include <core/egg/DVD/DvdRipper.hpp>
+#include <MarioKartWii/UI/Page/Other/FriendList.hpp>
 
 namespace Pulsar {
 
@@ -179,6 +180,7 @@ void System::UpdateContext() {
                 isItemModeBobOmb = newContext & (1 << PULSAR_GAMEMODEBOBOMB);
                 isItemModeShock = newContext & (1 << PULSAR_GAMEMODESHOCK);
                 isItemModeRain = newContext & (1 << PULSAR_GAMEMODEITEMRAIN);
+                is99999 = newContext & (1 << PULSAR_99999);
                 isUltras = newContext & (1 << PULSAR_ULTRAS);
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
@@ -207,7 +209,7 @@ void System::UpdateContext() {
     this->netMgr.hostContext = newContext;
 
     // First clear everything except 200_WW and OTTOnline bits
-    u32 preserved = this->context & ((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT));
+    u32 preserved = this->context & ((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT) | (1 << PULSAR_GAMEMODESHOCK) | (1 << PULSAR_GAMEMODEITEMRAIN));
 
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
@@ -239,6 +241,46 @@ void System::UpdateContext() {
     if(!isKO && this->koMgr != nullptr || isKO && sceneId == SCENE_ID_GLOBE) {
         delete this->koMgr;
         this->koMgr = nullptr;
+    }
+
+    const u32 region = this->netMgr.region;
+    if (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_JOINING_REGIONAL) {
+        switch (region) {
+            case 0x520:  // Regular
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                sInstance->context &= ~(1 << PULSAR_200_WW);
+                sInstance->context &= ~(1 << PULSAR_MODE_OTT);
+                sInstance->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+            
+            case 0x521:  // 200cc
+                this->context |= (1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                this->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+
+            case 0x522:  // OTT
+                this->context |= (1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                this->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+
+            case 0x523:  // Item Rain
+                this->context |= (1 << PULSAR_GAMEMODEITEMRAIN);
+                this->context &= ~(1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                break;
+            
+            case 0x524:  // Shock
+                this->context |= (1 << PULSAR_GAMEMODESHOCK);
+                this->context &= ~(1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+        }
     }
 }
 
@@ -296,7 +338,7 @@ kmWrite32(0x80549974, 0x38600001);
 kmWrite32(0x800017D0, 0x520);
 
 //WTP Pack Version
-kmWrite32(0x800017D4, 5);
+kmWrite32(0x800017D4, 51);
 
 //Skip ESRB page
 kmRegionWrite32(0x80604094, 0x4800001c, 'E');
@@ -306,5 +348,13 @@ const char System::CommonAssets[] = "/CommonAssets.szs";
 const char System::breff[] = "/Effect/Pulsar.breff";
 const char System::breft[] = "/Effect/Pulsar.breft";
 const char* System::ttModeFolders[] ={ "150", "200", "150F", "200F" };
+
+void FriendSelectPage_joinFriend(Pages::FriendInfo* _this, u32 animDir, float animLength) {
+    Pulsar::System::sInstance->netMgr.region = RKNet::Controller::sInstance->friends[_this->selectedFriendIdx].statusData.regionId;
+    return _this->EndStateAnimated(animDir, animLength);
+}
+
+kmCall(0x805d686c, FriendSelectPage_joinFriend);
+kmCall(0x805d6754, FriendSelectPage_joinFriend);
 
 }//namespace Pulsar

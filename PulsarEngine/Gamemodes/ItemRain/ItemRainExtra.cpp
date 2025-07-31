@@ -11,9 +11,6 @@ kmWrite8(0x808A5A3F, 0x00000022);
 kmWrite8(0x808A538F, 0x00000022);
 kmWrite8(0x808A56EB, 0x00000019);
 kmWrite8(0x808A548B, 0x00000019);
-kmWrite8(0x808A5B3B, 0x00000005);
-kmWrite8(0x808D209F, 0x00000007);
-kmWrite8(0x808D1FEF, 0x00000007);
 
 // Allow items like pows and shocks to be seen by other players in an online race.
 asmFunc ItemRainOnlineFix() {

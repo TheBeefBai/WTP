@@ -61,10 +61,14 @@ public:
 
     PushButton ottButton;
     PushButton twoHundredButton;
+    PushButton itemRainButton;
+    PushButton shockButton;
     u32 lastClickedButton;
     u32 region;
     static const u32 ottButtonId = 4;
     static const u32 twoHundredButtonId = 5;
+    static const u32 itemRainButtonId = 6;
+    static const u32 shockButtonId = 7;
 };
 }//namespace UI
 }//namespace Pulsar

@@ -18,14 +18,14 @@ static s32 sRaceInfoFrameCounter = 0;
 static int ITEMS_PER_SPAWN = 1;
 static int SPAWN_HEIGHT = 1500;
 static int SPAWN_RADIUS = 8000;
-static int MAX_ITEM_LIFETIME = 240;
+static int MAX_ITEM_LIFETIME = 360;
 static int DESPAWN_CHECK_INTERVAL = 2;
 
 static int GetSpawnInterval(u8 playerCount) {
-    if (playerCount <= 3) return 4;
-    if (playerCount <= 6) return 8;
-    if (playerCount <= 9) return 12;
-    return 16;
+    if (playerCount <= 3) return 6;
+    if (playerCount <= 6) return 12;
+    if (playerCount <= 9) return 18;
+    return 24;
 }
 
 static u32 GetRandom() {
@@ -52,18 +52,18 @@ static ItemObjId GetRandomItem() {
         
     static const ItemWeight weightedItems[] = {
         {OBJ_MUSHROOM, 20},
-        {OBJ_GREEN_SHELL, 20},
-        {OBJ_BANANA, 20},
-        {OBJ_RED_SHELL, 8},
+        {OBJ_GREEN_SHELL, 15},
+        {OBJ_BANANA, 16},
+        {OBJ_RED_SHELL, 5},
         {OBJ_FAKE_ITEM_BOX, 8},
-        {OBJ_BOBOMB, 8},
-        {OBJ_STAR, 3},
+        {OBJ_BOBOMB, 5},
+        {OBJ_STAR, 7},
         {OBJ_BLUE_SHELL, 3},
         {OBJ_GOLDEN_MUSHROOM, 3},
-        {OBJ_MEGA_MUSHROOM, 4},
+        {OBJ_MEGA_MUSHROOM, 10},
         {OBJ_POW_BLOCK, 1},
-        {OBJ_BULLET_BILL, 1},
-        {OBJ_LIGHTNING, 1}
+        {OBJ_BULLET_BILL, 5},
+        {OBJ_LIGHTNING, 2}
     };
         
     const u32 totalWeight = 100; // Sum of all weights
@@ -129,7 +129,7 @@ void SpawnItemRain() {
     if (!Pulsar::System::sInstance->IsContext(PULSAR_GAMEMODEITEMRAIN)) return;
     if (Pulsar::System::sInstance->IsContext(PULSAR_MODE_OTT)) return;
     if (RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_FROOM_HOST && RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_FROOM_NONHOST && 
-        RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_NONE) return;
+        RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_NONE && RKNet::Controller::sInstance->roomType != RKNet::ROOMTYPE_VS_REGIONAL) return;
     if (mode == MODE_TIME_TRIAL) return;
     if (!Racedata::sInstance || !Raceinfo::sInstance || !Item::Manager::sInstance) return;
     if (!Raceinfo::sInstance->IsAtLeastStage(RACESTAGE_RACE)) return;

@@ -145,6 +145,14 @@ Patch_WiimmfiHook1 = 0x800ee3a0
 loginRegion__3DWC = 0x80384fd0
 DWC_AuthServer = 0x80386338
 authServer__3DWC = 0x80386338 
+sInstance__Q23DWC12MatchControl = 0x8038630C
+gsimalloc = 0x800f3860
+DWCi_QR2Startup = 0x800d4e58
+DWC_SetReportLevel = 0x800cd060
+DWCi_SBCallback = 0x800e31c0
+DWC_ProcessFriendsMatch = 0x800d115c
+GetLastErrorEx__3DWCFPUiPQ23DWC9ErrorType = 0x800ccb64
+CreateFriendKey__3DWCFPCQ23DWC11AccUserData = 0x800ec6bc
 
 #GHTTP
 PostAddFileFromMemoryA__5GHTTPFPPQ25GHTTP7GHIPostPCcPCviPCcPCc = 0x80113944
@@ -895,6 +903,7 @@ ScheduleDisconnection__7SectionFv = 0x80623054
 CreatePageById__7SectionF6PageId = 0x80623390
 CreateSectionPages__7SectionF9SectionId = 0x8062c3a4
 AddInitialLayers__7SectionF9SectionId = 0x80630094
+Update__7SectionFv = 0x806224f8
 
 #RKSYSRequester
 NotifyNewLicenseContent__14RKSYSRequesterFv = 0x80621410

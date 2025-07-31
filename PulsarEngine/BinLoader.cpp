@@ -12,11 +12,11 @@ void *GetCustomKartParam(ArchiveMgr *archive, ArchiveSource type, const char *na
     else if(static_cast<Pulsar::WTPSettingTransmission>(Pulsar::Settings::Mgr::Get().GetUserSettingValue(static_cast<Pulsar::Settings::UserType>(Pulsar::Settings::SETTINGSTYPE_WTP), Pulsar::SETTINGWTP_TRANSMISSION)) == Pulsar::WTPSETTING_TRANSMISSION_ALLINSIDE){
         name = "kartParamAll.bin";
     }
-    else if(static_cast<Pulsar::WTPSettingTransmission>(Pulsar::Settings::Mgr::Get().GetUserSettingValue(static_cast<Pulsar::Settings::UserType>(Pulsar::Settings::SETTINGSTYPE_WTP), Pulsar::SETTINGWTP_TRANSMISSION)) == Pulsar::WTPSETTING_TRANSMISSION_BIKEINSIDE){
-        name = "kartParamBike.bin";
-    }
     else if(static_cast<Pulsar::WTPSettingTransmission>(Pulsar::Settings::Mgr::Get().GetUserSettingValue(static_cast<Pulsar::Settings::UserType>(Pulsar::Settings::SETTINGSTYPE_WTP), Pulsar::SETTINGWTP_TRANSMISSION)) == Pulsar::WTPSETTING_TRANSMISSION_ALLOUTSIDE){
         name = "kartParamOut.bin";
+    }
+    else if(static_cast<Pulsar::WTPSettingTransmission>(Pulsar::Settings::Mgr::Get().GetUserSettingValue(static_cast<Pulsar::Settings::UserType>(Pulsar::Settings::SETTINGSTYPE_WTP), Pulsar::SETTINGWTP_TRANSMISSION)) == Pulsar::WTPSETTING_TRANSMISSION_AERO){
+        name = "kartParamAero.bin";
     }
 
     return archive->GetFile(type, name, length);
@@ -69,7 +69,7 @@ void *GetCustomItemSlot(ArchiveMgr *archive, ArchiveSource type, const char *nam
     {
         name="ItemSlotBob.bin";
     }
-    if (itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP)
+    if (itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP || System::sInstance->netMgr.region == 0x524)
     {
         name="ItemSlotShock.bin";
     }

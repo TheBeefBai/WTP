@@ -51,21 +51,36 @@ void ExpWFCModeSel::OnInit() {
 }
 
 void ExpWFCModeSel::InitButton(ExpWFCModeSel& self) {
-    self.InitControlGroup(7);
+    self.InitControlGroup(9);
 
     self.region = 0x521;  // Store region in the page class instead
     self.AddControl(5, self.ottButton, 0);
-    self.ottButton.Load(UI::buttonFolder, "PULOTTButton", "PULOTTButton", 1, 0, 0);
+    self.ottButton.Load(UI::buttonFolder, "XifiMiscMenuModeSelect", "OTTButton", 1, 0, 0);
     self.ottButton.buttonId = ottButtonId;
+    self.ottButton.SetMessage(BMG_OTT_BUTTON);
     self.ottButton.SetOnClickHandler(self.onModeButtonClickHandler, 0);
     self.ottButton.SetOnSelectHandler(self.onButtonSelectHandler);
 
     self.AddControl(6, self.twoHundredButton, 0);
-    self.twoHundredButton.Load(UI::buttonFolder, "PUL200Button", "PUL200Button", 1, 0, 0);
+    self.twoHundredButton.Load(UI::buttonFolder, "XifiMiscMenuModeSelect", "200Button", 1, 0, 0);
     self.twoHundredButton.buttonId = twoHundredButtonId;
     self.twoHundredButton.SetMessage(BMG_200_BUTTON);
     self.twoHundredButton.SetOnClickHandler(self.onModeButtonClickHandler, 0);
     self.twoHundredButton.SetOnSelectHandler(self.onButtonSelectHandler);
+
+    self.AddControl(7, self.itemRainButton, 0);
+    self.itemRainButton.Load(UI::buttonFolder, "XifiMiscMenuModeSelect", "ItemRainButton", 1, 0, 0);
+    self.itemRainButton.buttonId = itemRainButtonId;
+    self.itemRainButton.SetMessage(BMG_ITEMRAIN_BUTTON);
+    self.itemRainButton.SetOnClickHandler(self.onModeButtonClickHandler, 0);
+    self.itemRainButton.SetOnSelectHandler(self.onButtonSelectHandler);
+
+    self.AddControl(8, self.shockButton, 0);
+    self.shockButton.Load(UI::buttonFolder, "XifiMiscMenuModeSelect", "ShockButton", 1, 0, 0);
+    self.shockButton.buttonId = shockButtonId;
+    self.shockButton.SetMessage(BMG_SHOCK_BUTTON);
+    self.shockButton.SetOnClickHandler(self.onModeButtonClickHandler, 0);
+    self.shockButton.SetOnSelectHandler(self.onButtonSelectHandler);
     
     Text::Info info;
     RKSYS::Mgr* rksysMgr = RKSYS::Mgr::sInstance;
@@ -77,6 +92,8 @@ void ExpWFCModeSel::InitButton(ExpWFCModeSel& self) {
     info.intToPass[0] = vr;
     self.ottButton.SetTextBoxMessage("go", BMG_RATING, &info);
     self.twoHundredButton.SetTextBoxMessage("go", BMG_RATING, &info);
+    self.itemRainButton.SetTextBoxMessage("go", BMG_RATING, &info);
+    self.shockButton.SetTextBoxMessage("go", BMG_RATING, &info);
 }
 kmCall(0x8064c294, ExpWFCModeSel::InitButton);
 
@@ -84,6 +101,8 @@ void ExpWFCModeSel::ClearModeContexts() {
     const u32 modeContexts[] = {
         PULSAR_MODE_OTT,
         PULSAR_200_WW,
+        PULSAR_GAMEMODEITEMRAIN,
+        PULSAR_GAMEMODESHOCK,
     };
     
     const u32 numContexts = sizeof(modeContexts) / sizeof(modeContexts[0]);
@@ -104,6 +123,14 @@ void ExpWFCModeSel::OnModeButtonClick(PushButton& modeButton, u32 hudSlotId) {
     else if (id == twoHundredButtonId) {
         System::sInstance->netMgr.region = 0x521;
         System::sInstance->context |= (1 << PULSAR_200_WW);
+    }
+    else if (id == itemRainButtonId) {
+        System::sInstance->netMgr.region = 0x523;
+        System::sInstance->context |= (1 << PULSAR_GAMEMODEITEMRAIN);
+    }
+    else if (id == shockButtonId) {
+        System::sInstance->netMgr.region = 0x524;
+        System::sInstance->context |= (1 << PULSAR_GAMEMODESHOCK);
     }
     else {
         System::sInstance->netMgr.region = 0x520;
@@ -127,10 +154,19 @@ void ExpWFCModeSel::OnActivatePatch() {
         page->lastClickedButton = 0; // Reset to VS button
     }
 
+    page->ottButton.SetPaneVisibility("capsul_null", false);
+    page->twoHundredButton.SetPaneVisibility("capsul_null", false);
+    page->itemRainButton.SetPaneVisibility("capsul_null", false);
+    page->shockButton.SetPaneVisibility("capsul_null", false);
+
     page->ottButton.isHidden = isHidden;
     page->ottButton.manipulator.inaccessible = isHidden;
     page->twoHundredButton.isHidden = isHidden;
     page->twoHundredButton.manipulator.inaccessible = isHidden;
+    page->itemRainButton.isHidden = isHidden;
+    page->itemRainButton.manipulator.inaccessible = isHidden;
+    page->shockButton.isHidden = isHidden;
+    page->shockButton.manipulator.inaccessible = isHidden;
 
     page->battleButton.isHidden = true;
     page->battleButton.manipulator.inaccessible = true;
@@ -150,6 +186,16 @@ void ExpWFCModeSel::OnActivatePatch() {
         button = &page->twoHundredButton;
         bmgId = UI::BMG_200_WW_BOTTOM;
     }
+    else if(System::sInstance->IsContext(PULSAR_GAMEMODEITEMRAIN)) {
+        page->lastClickedButton = itemRainButtonId;
+        button = &page->itemRainButton;
+        bmgId = UI::BMG_ITEMRAIN_WW_BOTTOM;
+    }
+    else if(System::sInstance->IsContext(PULSAR_GAMEMODESHOCK)) {
+        page->lastClickedButton = shockButtonId;
+        button = &page->shockButton;
+        bmgId = UI::BMG_SHOCK_WW_BOTTOM;
+    }
     else if(page->lastClickedButton == 2) {
         button = &page->battleButton;
         bmgId = UI::BMG_BATTLE_WITH6P;
@@ -166,6 +212,12 @@ void ExpWFCModeSel::OnModeButtonSelect(PushButton& modeButton, u32 hudSlotId) {
     }   
     else if(modeButton.buttonId == twoHundredButtonId) {
         this->bottomText.SetMessage(BMG_200_WW_BOTTOM);
+    }
+    else if(modeButton.buttonId == itemRainButtonId) {
+        this->bottomText.SetMessage(BMG_ITEMRAIN_WW_BOTTOM);
+    }
+    else if(modeButton.buttonId == shockButtonId) {
+        this->bottomText.SetMessage(BMG_SHOCK_WW_BOTTOM);
     }
     else WFCModeSelect::OnModeButtonSelect(modeButton, hudSlotId);
 }

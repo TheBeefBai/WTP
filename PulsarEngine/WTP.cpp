@@ -376,6 +376,5 @@ namespace Codes
         }
         kmCall(0x8052D1B0, GetCapVRGain);
     }
-    
 }
 }

@@ -28,7 +28,7 @@ namespace Race{
         if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
             dest->limit = 5;
         }
-        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP){
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP || System::sInstance->netMgr.region == 0x524){
             dest->limit = 25;
         }
     }
@@ -51,7 +51,7 @@ namespace Race{
         if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
             dest->limit = 25;
         }
-        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP){
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP || System::sInstance->netMgr.region == 0x524){
             dest->limit = 25;
         }
     }
