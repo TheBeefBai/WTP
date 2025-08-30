@@ -4,8 +4,10 @@
 #include <MarioKartWii/Kart/KartValues.hpp>
 #include <MarioKartWii/Kart/KartMovement.hpp>
 #include <MarioKartWii/Item/Obj/ObjProperties.hpp>
+#include <MarioKartWii/RKNet/RKNetController.hpp>
 #include <Race/200ccParams.hpp>
 #include <PulsarSystem.hpp>
+#include <WTP.hpp>
 
 namespace Pulsar {
 namespace Race {
@@ -35,10 +37,25 @@ Kart::Stats* ApplySpeedModifier(KartId kartId, CharacterId characterId) {
     };
 
     Kart::Stats* stats = Kart::ComputeStats(kartId, characterId);
+    const GameMode gameMode = Racedata::sInstance->menusScenario.settings.gamemode;
+    const RKNet::Controller* controller = RKNet::Controller::sInstance;
+    const RKNet::RoomType roomType = RKNet::Controller::sInstance->roomType;
     SpeedModConv speedModConv;
     speedModConv.kmpValue = (KMP::Manager::sInstance->stgiSection->holdersArray[0]->raw->speedMod << 16);
     if(speedModConv.speedMod == 0.0f) speedModConv.speedMod = 1.0f;
-    float factor = System::sInstance->IsContext(PULSAR_200) ? speedFactor : 1.0f;
+    float factor = 1.0f;
+    if (System::sInstance->IsContext(PULSAR_200) && System::sInstance->IsContext(Pulsar::PULSAR_99999) && (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST)) {
+        factor = 15.63f;
+    }
+    else if (System::sInstance->IsContext(PULSAR_200)){
+        factor = speedFactor;
+    }
+    else if (WTP::System::Is99999cc() && gameMode == MODE_PRIVATE_VS || WTP::System::Is99999cc() && gameMode == MODE_VS_RACE || WTP::System::Is99999cc() && gameMode == MODE_PUBLIC_VS){
+        factor = 15.64f;
+    }
+    else if (WTP::System::Is99999cc() && gameMode == MODE_BATTLE || WTP::System::Is99999cc() && gameMode == MODE_PUBLIC_BATTLE || WTP::System::Is99999cc() && gameMode == MODE_PRIVATE_BATTLE){
+        factor = 1.214;
+    }
     factor *= speedModConv.speedMod;
 
     Item::greenShellSpeed = 105.0f * factor;

@@ -12,6 +12,7 @@
 #include <Config.hpp>
 #include <SlotExpansion/CupsConfig.hpp>
 #include <core/egg/DVD/DvdRipper.hpp>
+#include <MarioKartWii/UI/Page/Other/FriendList.hpp>
 
 namespace Pulsar {
 
@@ -136,6 +137,7 @@ void System::UpdateContext() {
 
 
     bool is200 = racedataSettings.engineClass == CC_100 && this->info.Has200cc();
+    bool is99999 = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_CC) == HOSTSETTING_CC_99999;
     bool isUltras = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_ALLOW_ULTRAS) == HOSTSETTING_ULTRAS_ENABLED;
     bool isKOFinal = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_FINAL) == KOSETTING_FINAL_ALWAYS;
     bool isOTTChangeCombo = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWCHANGECOMBO) == OTTSETTING_COMBO_ENABLED;
@@ -150,6 +152,7 @@ void System::UpdateContext() {
     bool isItemModeFeatherless = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERLESS;
     bool isItemModeBobOmb = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BOBOMBBLAST;
     bool isItemModeShock = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_SHOCKTILYOUDROP;
+    bool isItemModeRain = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_ITEMRAIN;
     bool isFeather = this->info.HasFeather();
     bool isUMTs = this->info.HasUMTs();
     bool isMegaTC = this->info.HasMegaTC();
@@ -176,6 +179,8 @@ void System::UpdateContext() {
                 isItemModeFeatherless = newContext & (1 << PULSAR_GAMEMODEFEATHERLESS);
                 isItemModeBobOmb = newContext & (1 << PULSAR_GAMEMODEBOBOMB);
                 isItemModeShock = newContext & (1 << PULSAR_GAMEMODESHOCK);
+                isItemModeRain = newContext & (1 << PULSAR_GAMEMODEITEMRAIN);
+                is99999 = newContext & (1 << PULSAR_99999);
                 isUltras = newContext & (1 << PULSAR_ULTRAS);
                 isHAW = newContext & (1 << PULSAR_HAW);
                 isKO = newContext & (1 << PULSAR_MODE_KO);
@@ -204,17 +209,23 @@ void System::UpdateContext() {
     this->netMgr.hostContext = newContext;
 
     // First clear everything except 200_WW and OTTOnline bits
-    u32 preserved = this->context & ((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT));
+    u32 preserved = this->context & ((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT) | (1 << PULSAR_GAMEMODESHOCK) | (1 << PULSAR_GAMEMODEITEMRAIN));
+
+    // When entering a friend room (host/nonhost), clear any region-preserved bits
+    if (controller->roomType == RKNet::ROOMTYPE_FROOM_HOST || controller->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || controller->roomType == RKNet::ROOMTYPE_NONE) {
+        preserved &= ~((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT) | (1 << PULSAR_GAMEMODESHOCK) | (1 << PULSAR_GAMEMODEITEMRAIN));
+    }
 
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
-        context |= (is200 << PULSAR_200) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | 
+        context |= (is200 << PULSAR_200) | (is99999 << PULSAR_99999) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | 
         (isMegaTC << PULSAR_MEGATC) | (isOTT << PULSAR_MODE_OTT) | (isKO << PULSAR_MODE_KO) | (isUltras << PULSAR_ULTRAS) | (isCharRestrictLight << PULSAR_CHARRESTRICTLIGHT) | 
         (isCharRestrictMedium << PULSAR_CHARRESTRICTMEDIUM) | (isCharRestrictHeavy << PULSAR_CHARRESTRICTHEAVY) | (isKartRestrictKart << PULSAR_KARTRESTRICT) | 
         (isKartRestrictBike << PULSAR_BIKERESTRICT) | (isItemModeRandom << PULSAR_GAMEMODERANDOM) | (isItemModeBlast << PULSAR_GAMEMODEBLAST) | 
         (isItemModeFeather << PULSAR_GAMEMODEFEATHER) | (isItemModeFeatherless << PULSAR_GAMEMODEFEATHERLESS) | 
         (isItemModeBobOmb << PULSAR_GAMEMODEBOBOMB) | (isItemModeShock << PULSAR_GAMEMODESHOCK) | 
-        (isKOFinal << PULSAR_KOFINAL) | (isOTTChangeCombo << PULSAR_CHANGECOMBO);
+        (isKOFinal << PULSAR_KOFINAL) | (isOTTChangeCombo << PULSAR_CHANGECOMBO) | 
+        (isItemModeRain << PULSAR_GAMEMODEITEMRAIN);
     }
     this->context = context | preserved;
 
@@ -235,6 +246,46 @@ void System::UpdateContext() {
     if(!isKO && this->koMgr != nullptr || isKO && sceneId == SCENE_ID_GLOBE) {
         delete this->koMgr;
         this->koMgr = nullptr;
+    }
+
+    const u32 region = this->netMgr.region;
+    if (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_JOINING_REGIONAL) {
+        switch (region) {
+            case 0x520:  // Regular
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                sInstance->context &= ~(1 << PULSAR_200_WW);
+                sInstance->context &= ~(1 << PULSAR_MODE_OTT);
+                sInstance->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+            
+            case 0x521:  // 200cc
+                this->context |= (1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                this->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+
+            case 0x522:  // OTT
+                this->context |= (1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                this->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+
+            case 0x523:  // Item Rain
+                this->context |= (1 << PULSAR_GAMEMODEITEMRAIN);
+                this->context &= ~(1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_GAMEMODESHOCK);
+                break;
+            
+            case 0x524:  // Shock
+                this->context |= (1 << PULSAR_GAMEMODESHOCK);
+                this->context &= ~(1 << PULSAR_200_WW);
+                this->context &= ~(1 << PULSAR_MODE_OTT);
+                this->context &= ~(1 << PULSAR_GAMEMODEITEMRAIN);
+                break;
+        }
     }
 }
 
@@ -288,6 +339,12 @@ asmFunc System::GetNonTTGhostPlayersCount() {
 //Unlock Everything Without Save (_tZ)
 kmWrite32(0x80549974, 0x38600001);
 
+//WTP Pack ID
+kmWrite32(0x800017D0, 0x520);
+
+//WTP Pack Version
+kmWrite32(0x800017D4, 52);
+
 //Skip ESRB page
 kmRegionWrite32(0x80604094, 0x4800001c, 'E');
 
@@ -296,5 +353,13 @@ const char System::CommonAssets[] = "/CommonAssets.szs";
 const char System::breff[] = "/Effect/Pulsar.breff";
 const char System::breft[] = "/Effect/Pulsar.breft";
 const char* System::ttModeFolders[] ={ "150", "200", "150F", "200F" };
+
+void FriendSelectPage_joinFriend(Pages::FriendInfo* _this, u32 animDir, float animLength) {
+    Pulsar::System::sInstance->netMgr.region = RKNet::Controller::sInstance->friends[_this->selectedFriendIdx].statusData.regionId;
+    return _this->EndStateAnimated(animDir, animLength);
+}
+
+kmCall(0x805d686c, FriendSelectPage_joinFriend);
+kmCall(0x805d6754, FriendSelectPage_joinFriend);
 
 }//namespace Pulsar

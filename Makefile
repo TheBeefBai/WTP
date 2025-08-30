@@ -1,11 +1,13 @@
-CC := C:/Users/ZachPL/Documents/Source/Common/cw/mwcceppc.exe
-ENGINE := ./KamekInclude
+CC := mwcceppc.exe
 GAMESOURCE := ./GameSource
 PULSAR := ./PulsarEngine
-RIIVO := "C:/Users/ZachPL/AppData/Roaming/Dolphin Emulator/Load/Riivolution/GrillinsWTP"
-CFLAGS := -I- -i $(ENGINE) -i $(GAMESOURCE) -i $(PULSAR) -opt all -inline auto -enum int -proc gekko -fp hard -sdata 0 -sdata2 0 -maxerrors 1 -func_align 4
-KAMEK := ./KamekLinker/Kamek.exe
-EXTERNALS := -externals=$(GAMESOURCE)/symbols.txt -externals=$(GAMESOURCE)/AntiCheat.txt -versions=$(GAMESOURCE)/versions.txt
+KAMEK := Kamek.exe
+KAMEK_H := ./KamekInclude
+
+-include .env
+
+CFLAGS := -I- -i $(KAMEK_H) -i $(GAMESOURCE) -i $(PULSAR) -opt all -inline auto -enum int -proc gekko -fp hard -sdata 0 -sdata2 0 -maxerrors 1 -func_align 4 $(CFLAGS)
+EXTERNALS := -externals=$(GAMESOURCE)/symbols.txt -externals=$(GAMESOURCE)/anticheat.txt -versions=$(GAMESOURCE)/versions.txt
 
 SRCS := $(shell find $(PULSAR) -type f -name "*.cpp")
 OBJS := $(patsubst $(PULSAR)/%.cpp, build/%.o, $(SRCS))
@@ -20,7 +22,7 @@ test:
 build:
 	@mkdir -p build
 
-build/kamek.o: $(ENGINE)/kamek.cpp | build
+build/kamek.o: $(KAMEK_H)/kamek.cpp | build
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
 build/%.o: $(PULSAR)/%.cpp | build

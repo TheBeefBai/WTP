@@ -47,6 +47,8 @@ static void BeforeROOMSend(RKNet::PacketHolder<PulROOM>* packetHolder, PulROOM* 
         const u8 itemModeFeatherless = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_FEATHERLESS;
         const u8 itemModeBobomb = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_BOBOMBBLAST;
         const u8 itemModeShock = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_SHOCKTILYOUDROP;
+        const u8 itemModeRain = settings.GetUserSettingValue(Settings::SETTINGSTYPE_WTP, SETTINGWTP_GAMEMODE) == WTPSETTING_GAMEMODE_ITEMRAIN;
+        const u8 fastCC = settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_CC) == HOSTSETTING_CC_99999;
         const u8 koFinal = settings.GetSettingValue(Settings::SETTINGSTYPE_KO, SETTINGKO_FINAL) == KOSETTING_FINAL_ALWAYS;
         //const u8 ottUMT = settings.GetSettingValue(Settings::SETTINGSTYPE_OTT, SETTINGOTT_ALLOWUMTS) == OTTSETTING_UMTS_ENABLED;
 
@@ -69,7 +71,9 @@ static void BeforeROOMSend(RKNet::PacketHolder<PulROOM>* packetHolder, PulROOM* 
             | itemModeFeatherless << PULSAR_GAMEMODEFEATHERLESS
             | itemModeBobomb << PULSAR_GAMEMODEBOBOMB
             | itemModeShock << PULSAR_GAMEMODESHOCK
+            | itemModeRain << PULSAR_GAMEMODEITEMRAIN
             | koFinal << PULSAR_KOFINAL
+            | fastCC << PULSAR_99999
             | settings.GetSettingValue(Settings::SETTINGSTYPE_HOST, SETTINGHOST_RADIO_HOSTWINS) << PULSAR_HAW;
 
         u8 raceCount;

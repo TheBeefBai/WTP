@@ -3,7 +3,11 @@
 #include <Settings/UI/ExpOptionsPage.hpp>
 #include <Settings/UI/ExpFroomPage.hpp>
 #include <Settings/UI/ExpWFCMainPage.hpp>
+#include <UI/ChangeCombo/ChangeCombo.hpp>
 #include <SlotExpansion/CupsConfig.hpp>
+#include <Network/PacketExpansion.hpp>
+#include <MarioKartWii/UI/Ctrl/CountDown.hpp>
+#include <MarioKartWii/UI/Page/Other/SELECTStageMgr.hpp>
 
 namespace Pulsar {
 namespace UI {
@@ -95,7 +99,7 @@ void SettingsPanel::OnInit() {
     }
     MenuInteractable::OnInit();
     this->SetTransitionSound(0, 0);
-};
+}
 
 UIControl* SettingsPanel::CreateExternalControl(u32 id) {
     const char* variant = "SAVE";
@@ -168,6 +172,11 @@ void SettingsPanel::OnActivate() {
     this->externControls[0]->SelectInitial(0);
     this->bottomText->SetMessage(BMG_SETTINGS_BOTTOM); //no need for any offset here as this is the default "save" bottom msg
 
+    // Check if we're in any of the voting sections
+    SectionId id = SectionMgr::sInstance->curSection->sectionId;
+    bool isVotingSection = (id >= SECTION_P1_WIFI_FROOM_VS_VOTING && id <= SECTION_P2_WIFI_FROOM_COIN_VOTING) 
+    || (id == SECTION_P1_WIFI_VS_VOTING);
+
     this->externControls[1]->SetMessage(BMG_SETTINGS_PAGE + this->GetNextBMGOffset(1));
     this->externControls[2]->SetMessage(BMG_SETTINGS_PAGE + this->GetNextBMGOffset(-1));
     for(int i = 0; i < Settings::Params::maxRadioCount; ++i) {
@@ -208,11 +217,43 @@ void SettingsPanel::OnActivate() {
             scroller.SetMessage(scroller.id + bmgCategory);
             valueControl.activeTextValueControl->SetMessage((scroller.id + 1 << 4) + bmgCategory);
         }
-
-
-
     }
     MenuInteractable::OnActivate();
+
+    // Hide specific settings pages in voting sections
+    if(isVotingSection) {
+        if (this->sheetIdx == Settings::SETTINGSTYPE_KO || 
+            this->sheetIdx == Settings::SETTINGSTYPE_OTT ||
+            this->sheetIdx == Settings::SETTINGSTYPE_HOST) {
+            return;
+        }
+    }
+
+    // Hide/show scroller controls based on section
+    for(int i = 0; i < Settings::Params::maxScrollerCount; ++i) {
+        UpDownControl& upDown = this->upDownControls[i];
+        TextUpDownValueControl& text = this->textUpDown[i];
+        
+        if(isVotingSection) {
+            // Hide scrollers and make them completely inaccessible
+            upDown.isHidden = true;
+            upDown.manipulator.inaccessible = true;
+            text.isHidden = true;
+        } else {
+            bool isDisabled = i >= Settings::Params::scrollerCount[this->sheetIdx];
+            upDown.isHidden = isDisabled;
+            upDown.manipulator.inaccessible = isDisabled;
+            text.isHidden = isDisabled;
+        }
+    }
+
+    // Make sure radio buttons remain accessible
+    for(int i = 0; i < Settings::Params::maxRadioCount; ++i) {
+        RadioButtonControl& radio = this->radioButtonControls[i];
+        bool isDisabled = i >= Settings::Params::radioCount[this->sheetIdx];
+        radio.isHidden = isDisabled;
+        radio.manipulator.inaccessible = isDisabled;
+    }
 }
 
 const ut::detail::RuntimeTypeInfo* SettingsPanel::GetRuntimeTypeInfo() const {
@@ -241,15 +282,23 @@ ManipulatorManager& SettingsPanel::GetManipulatorManager() {
 }
 
 void SettingsPanel::LoadPrevMenuAndSaveSettings(PushButton& button) {
-    this->LoadPrevPage(button);
     const Section* section = SectionMgr::sInstance->curSection;
-    /*if(this->prevPageId == PAGE_OPTIONS) section->Get<ExpOptions>()->topSettingsPage = static_cast<PulPageId>(this->pageId);*/
-    if(this->prevPageId == PAGE_WFC_MAIN) section->Get<ExpWFCMain>()->topSettingsPage = static_cast<PulPageId>(this->pageId);
-    else if(this->prevPageId == PAGE_FRIEND_ROOM) {
+    if (this->prevPageId == PAGE_FRIEND_ROOM) {
         section->Get<ExpFroom>()->topSettingsPage = static_cast<PulPageId>(this->pageId);
-        this->nextPageId = PAGE_NONE; //FriendRoom's OnResume is important
+        this->nextPageId = PAGE_NONE;
+        this->EndStateAnimated(0, button.GetAnimationFrameSize());
     }
-    //else if(this->prevPageId == PAGE_SINGLE_PLAYER_MENU) ExpSinglePlayer::topSettingsPage = static_cast<PulPageId>(this->pageId);
+    else if (this->prevPageId == PAGE_VR) {
+        this->nextPageId = PAGE_NONE;
+        this->EndStateAnimated(0, button.GetAnimationFrameSize());
+    }
+    else {
+        this->LoadPrevPage(button);
+        if (this->prevPageId == PAGE_WFC_MAIN) {
+            section->Get<ExpWFCMain>()->topSettingsPage = static_cast<PulPageId>(this->pageId);
+        }
+    }
+
     this->SaveSettings(true);
 }
 
@@ -264,12 +313,12 @@ void SettingsPanel::SaveSettings(bool writeFile) {
         for(int i = 0; i < Settings::Params::radioCount[count]; ++i) {
             const u8 value = this->radioSettings[count][i];
             if(isPulsarPage) settings->SetSettingValue(static_cast<Settings::Type>(count), i, value);
-            else settings->SetUserSettingValue(static_cast<Settings::UserType>(count - Settings::Params::pulsarPageCount), i, value);
+            else settings->SetUserSettingValue(static_cast<Settings::UserType>(count), i, value);
         }
         for(int i = 0; i < Settings::Params::scrollerCount[count]; ++i) {
             const u8 value = this->scrollerSettings[count][i];
             if(isPulsarPage) settings->SetSettingValue(static_cast<Settings::Type>(count), i + Settings::Params::maxRadioCount, value);
-            else settings->SetUserSettingValue(static_cast<Settings::UserType>(count - Settings::Params::pulsarPageCount), i + Settings::Params::maxRadioCount, value);
+            else settings->SetUserSettingValue(static_cast<Settings::UserType>(count), i + Settings::Params::maxRadioCount, value);
         }
     }
     settings->Update();
@@ -282,6 +331,8 @@ void SettingsPanel::OnBackPress(u32 hudSlotId) {
 }
 
 void SettingsPanel::OnSaveButtonClick(PushButton& button, u32 hudSlotId) {
+    PushButton& okButton = *this->externControls[0];
+    okButton.SelectFocus();
     this->LoadPrevMenuAndSaveSettings(button);
 }
 
@@ -294,15 +345,29 @@ void SettingsPanel::OnLeftButtonClick(PushButton& button, u32 hudSlotId) {
 }
 
 void SettingsPanel::OnButtonClick(PushButton& button, u32 direction) {
+    SectionId id = SectionMgr::sInstance->curSection->sectionId;
+    bool isVotingSection = (id >= SECTION_P1_WIFI_FROOM_VS_VOTING && id <= SECTION_P2_WIFI_FROOM_COIN_VOTING) 
+                          || (id == SECTION_P1_WIFI_VS_VOTING);
+
+    int nextIdx = this->GetNextSheetIdx(direction);
+    
+    // Skip restricted pages in voting sections
+    if(isVotingSection) {
+        while (nextIdx == Settings::SETTINGSTYPE_KO || 
+               nextIdx == Settings::SETTINGSTYPE_OTT ||
+               nextIdx == Settings::SETTINGSTYPE_HOST) {
+            nextIdx = (nextIdx + direction + Settings::Params::pageCount) % Settings::Params::pageCount;
+        }
+    }
+
     this->nextPageId = this->pageId;
-    const int nextIdx = this->GetNextSheetIdx(direction);
     this->sheetIdx = nextIdx;
     if(nextIdx < Settings::Params::pulsarPageCount) {
         this->catIdx = nextIdx;
         this->bmgOffset = 0;
     }
     else {
-        this->catIdx = nextIdx - Settings::Params::pulsarPageCount; //5 becomes 0 if pulsarPageCount is 5
+        this->catIdx = nextIdx - Settings::Params::pulsarPageCount;
         this->bmgOffset = BMG_USERSETTINGSOFFSET;
     }
 

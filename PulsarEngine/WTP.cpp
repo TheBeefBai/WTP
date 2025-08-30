@@ -12,6 +12,10 @@ namespace WTP {
 
 Pulsar::System::Inherit CreateWTP(System::Create);
 
+bool System::Is99999cc() {
+    return Racedata::sInstance->racesScenario.settings.engineClass == CC_50;
+}
+
 System::WeightClass System::GetWeightClass(const CharacterId id){
     switch (id)
     {
@@ -112,6 +116,43 @@ namespace Codes
             }
             kmCall(0x805793AC, GetMegaFOV);
         }
+        namespace FPSPatch
+        {
+            //Force 30 FPS [Vabold]
+            kmWrite32(0x80554224, 0x3C808000);
+            kmWrite32(0x80554228, 0x88841204);
+            kmWrite32(0x8055422C, 0x48000044);
+
+            void FPSPatch() {
+            FPSPatchHook = 0x00;
+            if (static_cast<Pulsar::MenuSettingChangeFPSMode>(Pulsar::Settings::Mgr::Get().GetSettingValue(static_cast<Pulsar::Settings::Type>(Pulsar::Settings::SETTINGSTYPE_MENU), Pulsar::SETTINGMENU_CHANGEFPS)) == Pulsar::MENUSETTING_FPS_30) {
+            FPSPatchHook = 0x00FF0100;
+            }
+        }
+            static PageLoadHook PatchFPS(FPSPatch);
+        } // namespace PatchFPS
+
+        namespace AntiLagStart
+        {
+            //Anti Lag Start [Ro]
+            extern "C" void sInstance__8Racedata(void*);
+            asmFunc AntiLagStart(){
+                ASM(
+                nofralloc;
+            loc_0x0:
+            lwz r12, sInstance__8Racedata@l(r30);
+            lwz r12, 0xB70(r12);
+            cmpwi r12, 0x7;
+            blt- loc_0x14;
+            li r3, 0x1;
+
+            loc_0x14:
+            cmpwi r3, 0x0;
+            blr;
+            )
+            }
+            kmCall(0x80533430, AntiLagStart);
+        } // namespace AntiLagStart
 
         namespace UltraUncut
         {
@@ -143,10 +184,13 @@ namespace Codes
               const RacedataScenario& scenario = Racedata::sInstance->racesScenario;
               const GameMode mode = scenario.settings.gamemode;
 
-              if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || mode == MODE_VS_RACE){
+              if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_NONE){
                 if (System::sInstance->IsContext(Pulsar::PULSAR_ULTRAS) == Pulsar::HOSTSETTING_ULTRAS_DISABLED) {
                     UltraUncutHook = 0x00;
                    }
+              }
+              if(mode == MODE_TIME_TRIAL) {
+                UltraUncutHook = 0x00;
               }
             }
             static PageLoadHook PatchUltraUncut(UltraUncutPatch);
@@ -332,6 +376,5 @@ namespace Codes
         }
         kmCall(0x8052D1B0, GetCapVRGain);
     }
-    
 }
 }

@@ -6,6 +6,7 @@
 #include <MarioKartWii/UI/Ctrl/PushButton.hpp>
 #include <MarioKartWii/UI/Page/Menu/Menu.hpp>
 #include <MarioKartWii/UI/Page/Menu/VSSettings.hpp>
+#include <MarioKartWii/UI/Ctrl/CountDown.hpp>
 #include <Settings/SettingsParam.hpp>
 #include <UI/UI.hpp>
 
@@ -29,7 +30,7 @@ public:
     static const PulPageId id = PULPAGE_SETTINGS;
 
     static inline void CreatePanels(Section* section);
-    SettingsPanel(); //max 8 radios and 8 scrollers per page
+    SettingsPanel(); //max 8 radios and 8 scrollers per instance
     ~SettingsPanel() override;
     void OnInit() override; //To be defined
     void OnActivate() override; //TO BE DEFINED
@@ -42,6 +43,7 @@ public:
     UIControl* CreateControl(u32 id) override; //0x88
     void SetButtonHandlers(PushButton& pushButton) override; //80853aac 0x8C
     void OnBackPress(u32 hudSlotId);
+    void BeforeControlUpdate() override;
 
 private:
     void UpdateText();
@@ -85,6 +87,14 @@ private:
 public:
     u32 sheetIdx; //0x750
     u32 catIdx; //pulsarIdx or userIdx depending on the page
+    CountDown* timer;  // Add this member
+    s32 rouletteCounter;
+    CountDownTimerControl countdownControl;
+
+    bool ShouldHideScrollers() const;
+
+    int frameCounter;
+    CountDown countdown;
 };
 
 }//namespace UI

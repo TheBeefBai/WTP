@@ -9,15 +9,17 @@
 //WTP Dev Note: Code by Retro Rewind Team
 
 namespace WTP{
-namespace Race
-{
+namespace Race{
+
     static void ChangeBlueProp(Item::ObjProperties* dest, const Item::ObjProperties& rel)
     {
         bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         bool itemModeBlast = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
-        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST){
+        bool itemModeShock = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_NONE){
             itemModeRandom = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODERANDOM) ? Pulsar::WTPSETTING_GAMEMODE_RANDOM : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
             itemModeBlast = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBLAST) ? Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+            itemModeShock = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODESHOCK) ? Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         }
         new (dest) Item::ObjProperties(rel);
         if(itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ){
@@ -26,6 +28,9 @@ namespace Race
         if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
             dest->limit = 5;
         }
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP || System::sInstance->netMgr.region == 0x524){
+            dest->limit = 25;
+        }
     }
     kmCall(0x80790b74, ChangeBlueProp);
 
@@ -33,15 +38,20 @@ namespace Race
     {
         bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         bool itemModeBlast = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
-        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST){
+        bool itemModeShock = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_NONE){
             itemModeRandom = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODERANDOM) ? Pulsar::WTPSETTING_GAMEMODE_RANDOM : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
             itemModeBlast = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBLAST) ? Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+            itemModeShock = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODESHOCK) ? Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         }
         new (dest) Item::ObjProperties(rel);
         if(itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ){
             dest->limit = 5;
         }
         if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
+            dest->limit = 25;
+        }
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP || System::sInstance->netMgr.region == 0x524){
             dest->limit = 25;
         }
     }
@@ -51,7 +61,7 @@ namespace Race
     {
         bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         bool itemModeBlast = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
-        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST){
+        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_NONE){
             itemModeRandom = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODERANDOM) ? Pulsar::WTPSETTING_GAMEMODE_RANDOM : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
             itemModeBlast = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBLAST) ? Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
         }
@@ -64,6 +74,29 @@ namespace Race
         }
     }
     kmCall(0x80790bb4, ChangeBombProp);
+
+    static void ChangeStarProp(Item::ObjProperties* dest, const Item::ObjProperties& rel)
+    {
+        bool itemModeRandom = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        bool itemModeBlast = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        bool itemModeShock = Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        if(RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_HOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_NONE){
+            itemModeRandom = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODERANDOM) ? Pulsar::WTPSETTING_GAMEMODE_RANDOM : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+            itemModeBlast = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODEBLAST) ? Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+            itemModeShock = System::sInstance->IsContext(Pulsar::PULSAR_GAMEMODESHOCK) ? Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP : Pulsar::WTPSETTING_GAMEMODE_REGULAR;
+        }
+        new (dest) Item::ObjProperties(rel);
+        if(itemModeBlast == Pulsar::WTPSETTING_GAMEMODE_BLASTBLITZ){
+            dest->limit = 25;
+        }
+        if(itemModeRandom == Pulsar::WTPSETTING_GAMEMODE_RANDOM){
+            dest->limit = 20;
+        }
+        if(itemModeShock == Pulsar::WTPSETTING_GAMEMODE_SHOCKTILYOUDROP){
+            dest->limit = 20;
+        }
+    }
+    kmCall(0x80790b64, ChangeStarProp);
 
 } // namespace Race   
 } // namespace WTP

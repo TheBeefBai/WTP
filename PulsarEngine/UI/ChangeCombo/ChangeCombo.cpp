@@ -4,78 +4,96 @@
 #include <UI/ChangeCombo/ChangeCombo.hpp>
 #include <PulsarSystem.hpp>
 #include <Gamemodes/KO/KOMgr.hpp>
+#include <WTP.hpp>
 #include <MarioKartWii/UI/Ctrl/Menu/CtrlMenuCharacterSelect.hpp>
 #include <MarioKartWii/UI/Page/Menu/CharacterSelect.hpp>
 #include <MarioKartWii/GlobalFunctions.hpp>
 #include <Settings/SettingsParam.hpp>
-#include <WTP.hpp>
+#include <Settings/UI/SettingsPanel.hpp>
+#include <MarioKartWii/UI/Page/Other/VR.hpp>
+#include <MarioKartWii/UI/Page/Other/SELECTStageMgr.hpp>
+#include <MarioKartWii/UI/Ctrl/CountDown.hpp>
+#include <MarioKartWii/RKNet/RKNetController.hpp>
 
 //WTP Dev Note: Fixes by Optilizer
 
 namespace Pulsar {
-namespace UI {
-
+    namespace UI {
+    
 kmWrite32(0x806508d4, 0x60000000); //Add VR screen outside of 1st race in frooms
-
-ExpVR::ExpVR() : comboButtonState(0) {
+    
+ ExpVR::ExpVR() : comboButtonState(0) {
     this->onRandomComboClick.subject = this;
     this->onRandomComboClick.ptmf = &ExpVR::RandomizeComboVR;
     this->onChangeComboClick.subject = this;
     this->onChangeComboClick.ptmf = &ExpVR::ChangeCombo;
+    this->onSettingsClick.subject = this;
+    this->onSettingsClick.ptmf = &ExpVR::OnSettingsButtonClick;
+    this->onButtonSelectHandler.subject = this;
+    this->onButtonSelectHandler.ptmf = &ExpVR::ExtOnButtonSelect;
 }
-
+    
 kmWrite32(0x8064a61c, 0x60000000); //nop initControlGroup
-
+    
 kmWrite24(0x808998b3, 'PUL'); //WifiMemberConfirmButton -> PULiMemberConfirmButton
 void ExpVR::OnInit() {
-    this->InitControlGroup(0x11);
+    this->InitControlGroup(0x12);
     VR::OnInit();
-
+    bool hideSettings = false;
+    const RKNet::Controller* controller = RKNet::Controller::sInstance;
     const System* system = System::sInstance;
+    
+    const Section* curSection = SectionMgr::sInstance->curSection;
+    Pages::SELECTStageMgr* selectStageMgr = curSection->Get<Pages::SELECTStageMgr>();
+    CountDown* timer = &selectStageMgr->countdown;
+    
     bool isKOd = false;
     if(system->IsContext(PULSAR_MODE_KO) && system->koMgr->isSpectating) isKOd = true;
     if(system->IsContext(PULSAR_MODE_OTT) && system->IsContext(PULSAR_CHANGECOMBO) == OTTSETTING_COMBO_ENABLED) isKOd = true;
     if(System::sInstance->IsContext(PULSAR_MODE_OTT) && ((RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL) || (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_JOINING_REGIONAL))) isKOd = true;
-
+        
     this->AddControl(0xF, this->randomComboButton, 0);
     this->randomComboButton.isHidden = isKOd;
     this->randomComboButton.Load(UI::buttonFolder, "PULiMemberConfirmButton", "Random", 1, 0, isKOd);
     this->randomComboButton.SetOnClickHandler(this->onRandomComboClick, 0);
-
+    
     this->AddControl(0x10, this->changeComboButton, 0);
     this->changeComboButton.isHidden = isKOd;
     this->changeComboButton.Load(UI::buttonFolder, "PULiMemberConfirmButton", "Change", 1, 0, isKOd);
     this->changeComboButton.SetOnClickHandler(this->onChangeComboClick, 0);
-    this->changeComboButton.manipulator.SetAction(START_PRESS, this->changeComboButton.onClickHandlerObj, 0);
-    //this->changeComboButton.manipulator.SetAction(START_PRESS, this->changeComboButton.onClickHandlerObj, 0);
-
-    const Section* section = SectionMgr::sInstance->curSection;
-
-    Pages::SELECTStageMgr* selectStageMgr = section->Get<Pages::SELECTStageMgr>();
-    CountDown* timer = &selectStageMgr->countdown;
-
-    Pages::CharacterSelect* charPage = section->Get<Pages::CharacterSelect>();
+    
+    this->AddControl(0x11, settingsButton, 0);
+    this->settingsButton.Load(UI::buttonFolder, "SettingsVR", "SettingsVR", 1, 0, hideSettings);
+    this->settingsButton.buttonId = 5;
+    this->settingsButton.SetOnClickHandler(this->onSettingsClick, 0);
+    this->settingsButton.SetOnSelectHandler(this->onButtonSelectHandler);
+    this->topSettingsPage = SettingsPanel::id;
+    
+    // Share timer with settings panel
+    SettingsPanel* settingsPanel = ExpSection::GetSection()->GetPulPage<SettingsPanel>();
+    settingsPanel->timer = timer;
+    
+    Pages::CharacterSelect* charPage = curSection->Get<Pages::CharacterSelect>();
     charPage->timer = timer;
     charPage->ctrlMenuCharSelect.timer = timer;
-
-    Pages::KartSelect* kartPage = section->Get<Pages::KartSelect>();
+    
+    Pages::KartSelect* kartPage = curSection->Get<Pages::KartSelect>();
     if(kartPage != nullptr) kartPage->timer = timer;
-
-    Pages::BattleKartSelect* kartBattlePage = section->Get<Pages::BattleKartSelect>();
+    
+    Pages::BattleKartSelect* kartBattlePage = curSection->Get<Pages::BattleKartSelect>();
     if(kartBattlePage != nullptr) kartBattlePage->timer = timer;
-
-    Pages::MultiKartSelect* multiKartPage = section->Get<Pages::MultiKartSelect>();
+    
+    Pages::MultiKartSelect* multiKartPage = curSection->Get<Pages::MultiKartSelect>();
     if(multiKartPage != nullptr) multiKartPage->timer = timer;
-
-    Pages::DriftSelect* driftPage = section->Get<Pages::DriftSelect>();
+    
+    Pages::DriftSelect* driftPage = curSection->Get<Pages::DriftSelect>();
     if(driftPage != nullptr) driftPage->timer = timer;
-
-    Pages::MultiDriftSelect* multiDriftPage = section->Get<Pages::MultiDriftSelect>();
+    
+    Pages::MultiDriftSelect* multiDriftPage = curSection->Get<Pages::MultiDriftSelect>();
     if(multiDriftPage != nullptr) {
         multiDriftPage->nextSectionOnButtonClick = SECTION_NONE;
         multiDriftPage->timer = timer;
     }
-
 }
 
 static void RandomizeCombo() {
@@ -160,7 +178,69 @@ void ExpVR::ChangeCombo(PushButton& changeComboButton, u32 hudSlotId) {
     this->EndStateAnimated(0, changeComboButton.GetAnimationFrameSize());
 }
 
+void ExpVR::OnSettingsButtonClick(PushButton& button, u32 hudSlotId) {
+    this->areControlsHidden = true;
+    SettingsPanel* settingsPanel = ExpSection::GetSection()->GetPulPage<SettingsPanel>();
+    settingsPanel->prevPageId = PAGE_VR;
+    // Open Settings as a layer over VR and keep VR active underneath
+    this->AddPageLayer(static_cast<PageId>(this->topSettingsPage), 0);
+}
+
+void ExpVR::AfterControlUpdate() {
+    VR::AfterControlUpdate();
+
+    const bool hidden = this->areControlsHidden;
+
+    this->okButton.isHidden = hidden;
+    this->ctrlMenuBackButton.isHidden = hidden;
+    this->ctrlMenuBottomMessage.isHidden = hidden;
+    for (int i = 0; i < 12; ++i) this->vrControls[i].isHidden = hidden;
+
+    if (hidden) {
+        this->randomComboButton.isHidden = true;
+        this->changeComboButton.isHidden = true;
+        this->settingsButton.isHidden = true;
+    } else {
+        const System* system = System::sInstance;
+        bool isKOd = false;
+        if(system->IsContext(PULSAR_MODE_KO) && system->koMgr->isSpectating) isKOd = true;
+        if(system->IsContext(PULSAR_MODE_OTT) && system->IsContext(PULSAR_CHANGECOMBO) == OTTSETTING_COMBO_ENABLED) isKOd = true;
+        if(System::sInstance->IsContext(PULSAR_MODE_OTT) && ((RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL) || (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_JOINING_REGIONAL))) isKOd = true;
+
+        this->randomComboButton.isHidden = isKOd;
+        this->changeComboButton.isHidden = isKOd;
+        this->settingsButton.isHidden = false;
+
+        u32 lobbyPlayers = 0;
+        const RKNet::Controller* controller = RKNet::Controller::sInstance;
+        if (controller != nullptr) {
+            const RKNet::ControllerSub& sub = controller->subs[controller->currentSub];
+            lobbyPlayers = sub.playerCount;
+            if (lobbyPlayers > 12) lobbyPlayers = 12;
+        }
+        for (u32 i = lobbyPlayers; i < 12; ++i) this->vrControls[i].isHidden = true;
+    }
+}
+
+void ExpVR::OnResume() {
+    // Unhide VR when returning from Settings
+    if (this->areControlsHidden) this->areControlsHidden = false;
+    VR::OnResume();
+}
+
+void ExpVR::ExtOnButtonSelect(PushButton& button, u32 hudSlotId) {
+    if(button.buttonId == 5) {
+        u32 bmgId = BMG_SETTINGS_BOTTOM + 1;
+        if(this->topSettingsPage == PAGE_VS_TEAMS_VIEW) bmgId += 1;
+        else if(this->topSettingsPage == PAGE_BATTLE_MODE_SELECT) bmgId += 2;
+    }
+    else {
+        this->OnButtonClick(button, hudSlotId);
+    }
+}
+
 static void AddChangeComboPages(Section* section, PageId id) {
+    section->CreateAndInitPage(static_cast<PageId>(SettingsPanel::id));
     section->CreateAndInitPage(id);
     section->CreateAndInitPage(PAGE_CHARACTER_SELECT);
     bool isBattle = IsBattle();
@@ -320,7 +400,7 @@ void ExpMultiKartSelect::BeforeControlUpdate() {
         this->rouletteCounter--;
         this->controlsManipulatorManager.inaccessible = true;
     }
-    for(int hudId = 0; hudId < SectionMgr::sInstance->sectionParams->localPlayerCount; ++hudId) { //in all likelihood always 2
+    for(int hudId = 0; hudId < SectionMgr::sInstance->sectionParams->localPlayerCount; ++hudId) {
         if(roulette == ExpVR::randomDuration) this->arrows[hudId].SelectInitial(this->rolledKartPos[hudId]);
         if(roulette > 8) {
             const bool isGoodFrame = roulette % 4 == 1;
@@ -329,9 +409,12 @@ void ExpMultiKartSelect::BeforeControlUpdate() {
                 else this->arrows[hudId].HandleLeftPress(hudId, 0);
             }
         }
-        else if(roulette == 0) this->arrows[hudId].HandleClick(hudId, -1);
+        else if(roulette == 0) {
+            this->arrows[hudId].HandleClick(hudId, -1);
+            this->nextPageId = PAGE_VOTE;
+            this->EndStateAnimated(0, 0.0f);
+        }
     }
-
 }
 
 void DriftSelectBeforeControlUpdate(Pages::DriftSelect* driftSelect) {
@@ -397,7 +480,18 @@ end:
 }
 kmCall(0x8084e670, LoadCorrectPageAfterDrift);
 
-
+void SettingsPanel::BeforeControlUpdate() {
+    SectionId id = SectionMgr::sInstance->curSection->sectionId;
+    bool isVotingSection = (id >= SECTION_P1_WIFI_FROOM_VS_VOTING && id <= SECTION_P2_WIFI_FROOM_COIN_VOTING) 
+    || (id == SECTION_P1_WIFI_VS_VOTING);
+    if(isVotingSection) {
+        Pages::SELECTStageMgr* selectStageMgr = SectionMgr::sInstance->curSection->Get<Pages::SELECTStageMgr>();
+        CountDown* timer = &selectStageMgr->countdown;
+        if (timer->countdown <=0) {
+            this->OnBackPress(0);
+        }
+    }
+}
 
 }//namespace UI
 }//namespace Pulsar

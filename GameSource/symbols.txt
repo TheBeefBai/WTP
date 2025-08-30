@@ -145,6 +145,14 @@ Patch_WiimmfiHook1 = 0x800ee3a0
 loginRegion__3DWC = 0x80384fd0
 DWC_AuthServer = 0x80386338
 authServer__3DWC = 0x80386338 
+sInstance__Q23DWC12MatchControl = 0x8038630C
+gsimalloc = 0x800f3860
+DWCi_QR2Startup = 0x800d4e58
+DWC_SetReportLevel = 0x800cd060
+DWCi_SBCallback = 0x800e31c0
+DWC_ProcessFriendsMatch = 0x800d115c
+GetLastErrorEx__3DWCFPUiPQ23DWC9ErrorType = 0x800ccb64
+CreateFriendKey__3DWCFPCQ23DWC11AccUserData = 0x800ec6bc
 
 #GHTTP
 PostAddFileFromMemoryA__5GHTTPFPPQ25GHTTP7GHIPostPCcPCviPCcPCc = 0x80113944
@@ -841,6 +849,8 @@ GetWheelPhysicsHolder__Q24Kart4LinkFUi = 0x80590704
 GetStats__Q24Kart4LinkCFv = 0x80590874
 GetType__Q24Kart4LinkCFv = 0x80590a10
 GetPlayerIdx__Q24Kart4LinkCFv = 0x80590a5c
+GetPosition__Q24Kart4LinkCFv = 0x8059020c
+GetMovement__Q24Kart4LinkFv = 0x8059077c
 
 #KartPlayer
 GetDriftState__Q24Kart6PlayerCFv = 0x805911d8
@@ -893,6 +903,7 @@ ScheduleDisconnection__7SectionFv = 0x80623054
 CreatePageById__7SectionF6PageId = 0x80623390
 CreateSectionPages__7SectionF9SectionId = 0x8062c3a4
 AddInitialLayers__7SectionF9SectionId = 0x80630094
+Update__7SectionFv = 0x806224f8
 
 #RKSYSRequester
 NotifyNewLicenseContent__14RKSYSRequesterFv = 0x80621410
@@ -1733,7 +1744,9 @@ AddUseEVENTEntry__Q24Item3ObjF9ItemObjIdUc = 0x8079c220
 LoadGraphicsImplicitBRRESNoFunc__Q24Item3ObjFPCcPCcPQ34Item3Obj8AnmParamQ44nw4r3g3d6ScnMdl12BufferOptionUi = 0x8079ff5c
 LoadGraphicsImplicitBRRES__Q24Item3ObjFPCcPCcUcPQ34Item3Obj8AnmParamQ44nw4r3g3d6ScnMdl12BufferOptionPv = 0x8079ffdc
 LoadGraphics__Q24Item3ObjFPCcPCcPCcUcPQ34Item3Obj8AnmParamQ44nw4r3g3d6ScnMdl12BufferOptionPvUi = 0x807a0040
+CreateItemDirect__Q24Item7ManagerF9ItemObjIdPC4Vec3P4Vec3Ui = 0x80799fbc
 DeployBlooper__Q24Item8GessoMgrFUs = 0x807a9128
+DisappearDueToExcess__Q24Item3ObjFb = 0x807a6c14
 
 #ItemSlot
 DecideItem__Q24Item12ItemSlotDataFUsUcbbPQ24Item6Player = 0x807bb42c
@@ -1885,5 +1898,37 @@ sprintf = 0x80011a2c
 
 WWFC_CUSTOM_REGION = 0x80005efc
 UltraUncutHook = 0x80001201
+FPSPatchHook = 0x80001202
+DefaultItemHook = 0x80001204
 RemoveBloom = 0x802575DF
 RemoveBackgroundBlur = 0x80258184
+beginFrame = 0x8020fe24
+
+GetCurrentContext__2OSFv = 0x801a1ecc
+ OnButtonClick__Q25Pages2VRFR10PushButtonUi = 0x8064ae6c
+ HandleDeselect__18RadioButtonControlFUiUi = 0x80606434
+ HandleSelect__18RadioButtonControlFUiUi = 0x806062d8
+ HandleClick__18RadioButtonControlFUiUi = 0x80606620
+ HandleDeselect__13UpDownControlFUiUi = 0x8063f7c4
+
+ #VotePage
+__ct__Q25Pages4VoteFv = 0x80642f90
+__dt__Q25Pages4VoteFv = 0x806430bc
+BeforeControlUpdate__Q25Pages4VoteFv = 0x806437e8
+GetRuntimeTypeInfo__Q25Pages4VoteCFv = 0x8064464c
+OnInit__Q25Pages4VoteFv = 0x80643168
+OnDispose__Q25Pages4VoteFv = 0x806433c8
+BeforeEntranceAnimations__Q25Pages4VoteFv = 0x806433cc
+BeforeExitAnimations__Q25Pages4VoteFv = 0x80643e98
+GetNextPage__Q25Pages4VoteCFv = 0x80643f18
+GetCurrentContext__2OSFv = 0x801a1ecc
+OnButtonClick__Q25Pages2VRFR10PushButtonUi = 0x8064ae6c
+HandleDeselect__18RadioButtonControlFUiUi = 0x80606434
+HandleSelect__18RadioButtonControlFUiUi = 0x806062d8
+HandleClick__18RadioButtonControlFUiUi = 0x80606620
+HandleDeselect__13UpDownControlFUiUi = 0x8063f7c4
+OnActivate__Q36Pulsar2UI5ExpVRFv = 0x8064a84c
+
+current_time = 0x800f24c8
+Update__8ElineMgrFv = 0x8052d888
+UpdateFromPrevRace__16RacedataScenarioFv = 0x8052f1e0

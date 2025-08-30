@@ -112,16 +112,14 @@ u8 Mgr::GetSettingValue(Type type, u32 setting) const {
     return this->rawBin->GetSection<PagesHolder>().pages[type].settings[setting];
 }
 u8 Mgr::GetUserSettingValue(UserType type, u32 setting) const {
-    const PagesHolder& pagesHolder = this->rawBin->GetSection<PagesHolder>();
-    return pagesHolder.pages[type + pagesHolder.pulsarPageCount].settings[setting];
+    return this->rawBin->GetSection<PagesHolder>().pages[type + 5].settings[setting];
 }
 
 void Mgr::SetSettingValue(Type type, u32 setting, u8 value) {
     this->rawBin->GetSection<PagesHolder>().pages[type].settings[setting] = value;
 }
 void Mgr::SetUserSettingValue(UserType type, u32 setting, u8 value) {
-    PagesHolder& pagesHolder = this->rawBin->GetSection<PagesHolder>();
-    pagesHolder.pages[type + pagesHolder.pulsarPageCount].settings[setting] = value;
+    this->rawBin->GetSection<PagesHolder>().pages[type].settings[setting] = value;
 }
 
 void Mgr::AdjustSections() {
