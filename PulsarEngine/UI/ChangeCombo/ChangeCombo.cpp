@@ -13,6 +13,7 @@
 #include <MarioKartWii/UI/Page/Other/VR.hpp>
 #include <MarioKartWii/UI/Page/Other/SELECTStageMgr.hpp>
 #include <MarioKartWii/UI/Ctrl/CountDown.hpp>
+#include <MarioKartWii/RKNet/RKNetController.hpp>
 
 //WTP Dev Note: Fixes by Optilizer
 
@@ -180,9 +181,51 @@ void ExpVR::ChangeCombo(PushButton& changeComboButton, u32 hudSlotId) {
 void ExpVR::OnSettingsButtonClick(PushButton& button, u32 hudSlotId) {
     this->areControlsHidden = true;
     SettingsPanel* settingsPanel = ExpSection::GetSection()->GetPulPage<SettingsPanel>();
-    settingsPanel->prevPageId = PAGE_NONE;
+    settingsPanel->prevPageId = PAGE_VR;
+    // Open Settings as a layer over VR and keep VR active underneath
     this->AddPageLayer(static_cast<PageId>(this->topSettingsPage), 0);
-    this->EndStateAnimated(0, button.GetAnimationFrameSize());
+}
+
+void ExpVR::AfterControlUpdate() {
+    VR::AfterControlUpdate();
+
+    const bool hidden = this->areControlsHidden;
+
+    this->okButton.isHidden = hidden;
+    this->ctrlMenuBackButton.isHidden = hidden;
+    this->ctrlMenuBottomMessage.isHidden = hidden;
+    for (int i = 0; i < 12; ++i) this->vrControls[i].isHidden = hidden;
+
+    if (hidden) {
+        this->randomComboButton.isHidden = true;
+        this->changeComboButton.isHidden = true;
+        this->settingsButton.isHidden = true;
+    } else {
+        const System* system = System::sInstance;
+        bool isKOd = false;
+        if(system->IsContext(PULSAR_MODE_KO) && system->koMgr->isSpectating) isKOd = true;
+        if(system->IsContext(PULSAR_MODE_OTT) && system->IsContext(PULSAR_CHANGECOMBO) == OTTSETTING_COMBO_ENABLED) isKOd = true;
+        if(System::sInstance->IsContext(PULSAR_MODE_OTT) && ((RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_VS_REGIONAL) || (RKNet::Controller::sInstance->roomType == RKNet::ROOMTYPE_JOINING_REGIONAL))) isKOd = true;
+
+        this->randomComboButton.isHidden = isKOd;
+        this->changeComboButton.isHidden = isKOd;
+        this->settingsButton.isHidden = false;
+
+        u32 lobbyPlayers = 0;
+        const RKNet::Controller* controller = RKNet::Controller::sInstance;
+        if (controller != nullptr) {
+            const RKNet::ControllerSub& sub = controller->subs[controller->currentSub];
+            lobbyPlayers = sub.playerCount;
+            if (lobbyPlayers > 12) lobbyPlayers = 12;
+        }
+        for (u32 i = lobbyPlayers; i < 12; ++i) this->vrControls[i].isHidden = true;
+    }
+}
+
+void ExpVR::OnResume() {
+    // Unhide VR when returning from Settings
+    if (this->areControlsHidden) this->areControlsHidden = false;
+    VR::OnResume();
 }
 
 void ExpVR::ExtOnButtonSelect(PushButton& button, u32 hudSlotId) {

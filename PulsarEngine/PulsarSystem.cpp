@@ -211,6 +211,11 @@ void System::UpdateContext() {
     // First clear everything except 200_WW and OTTOnline bits
     u32 preserved = this->context & ((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT) | (1 << PULSAR_GAMEMODESHOCK) | (1 << PULSAR_GAMEMODEITEMRAIN));
 
+    // When entering a friend room (host/nonhost), clear any region-preserved bits
+    if (controller->roomType == RKNet::ROOMTYPE_FROOM_HOST || controller->roomType == RKNet::ROOMTYPE_FROOM_NONHOST || controller->roomType == RKNet::ROOMTYPE_NONE) {
+        preserved &= ~((1 << PULSAR_200_WW) | (1 << PULSAR_MODE_OTT) | (1 << PULSAR_GAMEMODESHOCK) | (1 << PULSAR_GAMEMODEITEMRAIN));
+    }
+
     u32 context = (isCT << PULSAR_CT) | (isHAW << PULSAR_HAW) | (isMiiHeads << PULSAR_MIIHEADS);
     if(isCT) { //contexts that should only exist when CTs are on
         context |= (is200 << PULSAR_200) | (is99999 << PULSAR_99999) | (isFeather << PULSAR_FEATHER) | (isUMTs << PULSAR_UMTS) | 
@@ -338,7 +343,7 @@ kmWrite32(0x80549974, 0x38600001);
 kmWrite32(0x800017D0, 0x520);
 
 //WTP Pack Version
-kmWrite32(0x800017D4, 51);
+kmWrite32(0x800017D4, 52);
 
 //Skip ESRB page
 kmRegionWrite32(0x80604094, 0x4800001c, 'E');
